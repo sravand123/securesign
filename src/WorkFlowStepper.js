@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -13,6 +13,8 @@ import CONSTS from './constants';
 import DocumentUpload from './DocumentUpload';
 import Signers from './Signers';
 import EmailBox from './EmailBox';
+import axios from 'axios';
+import { useParams } from 'react-router';
 
 function getSteps() {
   return ['Upload A Document', 'Add  People to Sign', 'Generate Email'];
@@ -108,10 +110,34 @@ export default function WorkFlowStepper(props) {
   const classes = useStyles();
 
   const [state, setState] = useState({
-    activeStep: 0,
+    activeStep: null,
     file: null,
     id: null,
   });
+  const params = useParams();
+  useEffect(()=>{
+    if(params.fileID!=='new'){
+
+      axios.get('/api/documents/'+params.fileID +'/status',{withCredentials:true}).then(
+        (data)=>{
+          let status = data.data.status;
+          if(status==='uploaded'){
+            setState({...state,activeStep:1})
+          }
+         else if(status==='added_signers'){
+            setState({...state,activeStep:2})
+          }
+          else {
+            window.location.replace('/add/new');
+          }
+        }
+  
+      )
+    }
+    else{
+      setState({...state,activeStep:0})
+    }
+  },[])
 
   const handleNext = () => {
     setState({ ...state, activeStep: state.activeStep + 1 });

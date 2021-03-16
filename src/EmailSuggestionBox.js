@@ -12,7 +12,7 @@ export default function EmailSuggestionBox(props) {
     const [options, setOptions] = React.useState([]);
 
     useEffect(() => {
-        Axios.get('api/users',{withCredentials:true}).then(
+        Axios.get('../api/users',{withCredentials:true}).then(
             (resp) => {
                 setOptions(resp.data);
                 console.log(resp.data);

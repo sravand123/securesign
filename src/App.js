@@ -36,12 +36,13 @@ function App() {
     <Router>
       <Switch>
         <Route path='/login' render={() => { return !isLoggedIn() ? (<> <LoginPage></LoginPage> </>) : (<Redirect to='/'></Redirect>) }}></Route>
-        <Route exact path="/add" render={protectRoute(
+        <Route exact path="/add/:fileID" render={protectRoute(
           <>
             <NavBar></NavBar>
             <WorkFlowStepper></WorkFlowStepper>
           </>
         )}></Route>
+       
         <Route exact path="/status" render={protectRoute(
           <>
             <NavBar></NavBar>

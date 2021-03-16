@@ -47,7 +47,7 @@ export default function Status(props) {
         let EXPIRING_SOON = [];
         let STARRED = [];
         MY_DOCUMENTS.forEach((document, index1) => {
-            if (document.status !== 'draft') {
+            if (document.status === 'sent') {
 
                 let rejected = false;
                 let waiting = false;

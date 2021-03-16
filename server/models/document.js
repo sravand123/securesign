@@ -30,8 +30,8 @@ const documentSchema = new mongoose.Schema(
       ],
     status: {
       type: String,
-      enum: ['draft', 'sent'],
-      default: 'draft'
+      enum: ['uploaded','added_signers', 'sent'],
+      default: 'uploaded'
     },
     comments:
       [

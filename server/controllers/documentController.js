@@ -44,7 +44,7 @@ exports.getUserDocuments = (req, res, next) => {
         else {
             res.status(200).json({
                 ownedDocuments: resp.ownedDocuments,
-                sharedDocuments: resp.sharedDocuments
+                sharedDocuments: resp.sharedDocuments.filter((document)=>document.status==='sent')
             });
         }
     })
@@ -62,6 +62,7 @@ exports.uploadDocument = async (req, res, next) => {
     documentData.description = req.body.description;
     documentData.owner = getEmail(req);
     documentData.timeline = [{ action: 'created', time: new Date(), email: email }];
+    documentData.status  = 'uploaded';
     try {
 
         let response = await Document.create(documentData);
@@ -83,7 +84,7 @@ exports.addSigners = async (req, res, next) => {
     try {
         signers.forEach(async (signer, index) => {
             agenda.define("set_document_expired", async (job) => {
-                let document = await Document.findById(job.attrs.data.documentId, { signers: 1, timeline: 1 }).exec();
+                let document = await Document.findById(job.attrs.data.documentId, { signers: 1, timeline: 1,status:1 }).exec();
                 let signers = document.signers;
                 let timeline = document.timeline;
 
@@ -93,6 +94,7 @@ exports.addSigners = async (req, res, next) => {
                 })
                 document.timeline = timeline;
                 document.signers = signers;
+                document.status = 'added_signers'
                 await document.save();
             });
             (async function () {
@@ -278,6 +280,7 @@ exports.postComment = async(req,res,next)=>{
 }
 exports.sigDocument = async (req,res,next)=>{
     try{
+        
         let documentId  = req.params.id;
         let document  = await Document.findById(documentId,{signers:1,timeline:1}).exec();
         let email = getEmail(req,res);
@@ -325,5 +328,22 @@ exports.rejectDocument = async(req,res,next)=>{
     }
     catch(err){
         res.status(500).json({ err: "Internal Server Error" }); 
+    }
+}
+
+exports.getStatus = async(req,res,next)=>{
+    try{
+        let documentId  = req.params.id;
+        let document  = await Document.findById(documentId,{status:1}).exec();
+        if(document){
+            res.status(200).json(document);
+        }
+        else{
+            res.status(200).json({status:'not_uploaded'});
+        }   
+    }
+    catch(err){
+        res.status(500).json({ err: "Internal Server Error" }); 
+
     }
 }

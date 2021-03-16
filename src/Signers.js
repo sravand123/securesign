@@ -8,6 +8,7 @@ import CONSTS from './constants';
 import CustomButton from './CustomButton';
 import Loader from './Loader';
 import SignerBox from './SignerBox';
+import { useParams } from 'react-router';
 
 
 const useStyles = makeStyles(() => ({
@@ -35,6 +36,7 @@ export default function Signers(props) {
         alertText:'',
         seq : false
     });
+    const params = useParams();
     const validateEmail = (email) => {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(String(email).toLowerCase());
@@ -67,7 +69,7 @@ export default function Signers(props) {
     }
     const handleSubmit = () => {
         setState({ ...state, loader: true });
-        axios.post('api/documents/' + localStorage.getItem('FileID') + '/signers', { signers: state.signers , sequential:state.seq}, { withCredentials: true }).then(
+        axios.post('../api/documents/' +params.fileID + '/signers', { signers: state.signers , sequential:state.seq}, { withCredentials: true }).then(
             (data) => {
                 props.changeState();
                 setState({ ...state, loader: false });

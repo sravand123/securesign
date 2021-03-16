@@ -31,6 +31,9 @@ export default function DocumentInfo(props) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const completeFlow = ()=>{
+    window.location.replace('../../add/'+props.document._id);
+  }
   const useStyles = makeStyles(() => ({
     tabItem: {
       fontFamily: 'Poppins',
@@ -63,53 +66,53 @@ export default function DocumentInfo(props) {
             </Tabs>
           </Paper>
           <Grid container justify='center' alignItems='center'  >
-            <Grid item xs={10} sm={6} hidden={value !== 0} style={{margin:'20px'}}>
+            <Grid item xs={10} sm={6} hidden={value !== 0} style={{ margin: '20px' }}>
 
               <div style={{ boxShadow: CONSTS.boxShadow, padding: '20px' }}>
-                <div style={{marginBottom:'10px'}}>
-                  <DescriptionIcon  style={{fontSize:30,position:'relative',top:'5px'}}></DescriptionIcon>
-                  <span style={{fontSize:20 ,fontWeight:'bold'}}> Document Info</span>
+                <div style={{ marginBottom: '10px' }}>
+                  <DescriptionIcon style={{ fontSize: 30, position: 'relative', top: '5px' }}></DescriptionIcon>
+                  <span style={{ fontSize: 20, fontWeight: 'bold' }}> Document Info</span>
                 </div>
                 <Divider></Divider>
-                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold',  }}>
+                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold', }}>
                   Title
                     </Typography>
                 <Typography variant="subtitle2" gutterBottom>
                   {props.document.name}
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold',  }}>
+                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold', }}>
                   Description
                     </Typography>
                 <Typography variant="subtitle2" gutterBottom >
                   {props.document.description !== 'null' ? props.document.description : "No description is provided"}
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold',  }}>
+                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold', }}>
                   Creation Date
                     </Typography>
                 <Typography variant="subtitle2" gutterBottom >
                   {props.document.createdTime}
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold',  }}>
+                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold', }}>
                   Last Modified Date
                     </Typography>
                 <Typography variant="subtitle2" gutterBottom >
                   {props.document.lastModifiedTime}
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold',  }}>
+                <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold', }}>
                   Owner
                     </Typography>
                 <Typography variant="subtitle2" gutterBottom >
                   {props.document.owner}
                 </Typography>
               </div>
-             
-            </Grid>
-           
-            <Grid hidden={value !== 1} item xs={12} sm={8}   >
-            <div style={{ boxShadow: CONSTS.boxShadow, padding: '20px',margin:'20px' }}>
 
-              <SignersTable signers={props.document.signers}></SignersTable>
-            </div>
+            </Grid>
+
+            <Grid hidden={value !== 1} item xs={12} sm={8}   >
+              <div style={{ boxShadow: CONSTS.boxShadow, padding: '20px', margin: '20px' }}>
+
+                <SignersTable signers={props.document.signers}></SignersTable>
+              </div>
             </Grid>
             <Grid item xs={10} sm={4} hidden={value !== 0}>
               <BasicTimeline timeline={props.document.timeline}></BasicTimeline>
@@ -120,10 +123,17 @@ export default function DocumentInfo(props) {
 
         </DialogContent>
         <DialogActions>
+          {
+          props.document.status!=='sent' ? ( <CustomButton text="Complete Flow" onClick={completeFlow} >
+          </CustomButton>):(
+            <></>
+          )
+          }
+       
           <CustomButton text="Cancel" onClick={props.handleClose} >
             Cancel
           </CustomButton>
-          <CustomButton text="Open Document" onClick={()=>{window.location.replace('/doc/'+props.document._id)}}  >
+          <CustomButton text="Open Document" onClick={() => { window.location.replace('/doc/' + props.document._id) }}  >
             Open Document
           </CustomButton>
         </DialogActions>

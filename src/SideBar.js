@@ -12,6 +12,7 @@ import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import ErrorIcon from '@material-ui/icons/Error';
 import AccountBoxOutlinedIcon from '@material-ui/icons/AccountBoxOutlined';
 import QueryBuilderOutlinedIcon from '@material-ui/icons/QueryBuilderOutlined';
+import DraftsIcon from '@material-ui/icons/Drafts';
 const useStyles = makeStyles((theme) => ({
 
     root: {
@@ -43,6 +44,12 @@ export default function SideBar(props) {
                         <AccountBoxOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText primary="My Documents" />
+                </ListItem>
+                <ListItem button id="DRAFTS" onClick={handleClick}>
+                    <ListItemIcon>
+                        <DraftsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Drafts" />
                 </ListItem>
                 <ListItem button id="ACTION_REQUIRED" onClick={handleClick}>
                     <ListItemIcon>

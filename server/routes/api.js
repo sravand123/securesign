@@ -19,6 +19,7 @@ router.get('/documents/:id/comments', documentController.getComments);
 router.post('/documents/:id/comments', documentController.postComment);
 router.post('/documents/:id/sign', documentController.sigDocument);
 router.post('/documents/:id/reject', documentController.rejectDocument);
+router.get('/documents/:id/status', documentController.getStatus);
 
 router.get('/documents/:id', documentController.getDocment);
 router.get('/users', userController.getUserNamesList);

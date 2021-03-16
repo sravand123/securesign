@@ -6,6 +6,7 @@ import Loader from './Loader';
 import SendIcon from '@material-ui/icons/Send';
 import { grey } from '@material-ui/core/colors';
 import CustomButton from './CustomButton';
+import { useParams } from 'react-router';
 
 
 
@@ -16,14 +17,14 @@ export default function EmailBox(props) {
         body: '',
         loader: false
     })
-
+    const params = useParams();
     const handleChange = (e) => {
         setState({ ...state, [e.target.id]: e.target.value });
     }
     const sendEmail = () => {
         setState({ ...state, loader: true });
 
-        axios.post('api/documents/' + localStorage.getItem('FileID') + "/email", { subject: state.subject, body: state.body }).then(
+        axios.post('../api/documents/' +params.fileID + "/email", { subject: state.subject, body: state.body }).then(
             data => {
                 props.changeState();
             },

@@ -8,6 +8,7 @@ import Loader from './Loader';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import ComputerIcon from '@material-ui/icons/Computer';
 import CustomButton from './CustomButton';
+import { useHistory } from 'react-router';
 
 
 const useStyles = makeStyles({
@@ -117,6 +118,8 @@ export default function DocumentUpload(props) {
     description: null,
     loader: false, file: null
   });
+  const history = useHistory();
+
   useEffect(() => {
     console.log(state);
   }, [state])
@@ -151,10 +154,10 @@ export default function DocumentUpload(props) {
     axios.post("/api/documents", formData, { withCredentials: true }).then(
 
       data => {
-        localStorage.setItem('FileID', data.data._id);
         props.setFileID(data.data);
-        props.changeState();
-
+        setState({ ...state, loader: true });
+        window.location.replace(data.data._id);
+        
       },
       err => {
 

@@ -104,7 +104,7 @@ export default function NavBar(props) {
             SecurESign
           </Typography>
           <Button className={classes.navItem} color="inherit" href="/">Home</Button>
-          <Button className={classes.navItem} color="inherit" href="/add">add Document</Button>
+          <Button className={classes.navItem} color="inherit" href="/add/new">add Document</Button>
           <Button className={classes.navItem} color="inherit" href="/status">Status</Button>
 
           <div className={classes.navItem}>
@@ -167,7 +167,7 @@ export default function NavBar(props) {
               <ListItemIcon>
                 <NoteAddIcon></NoteAddIcon>
               </ListItemIcon>
-              <a className={classes.link} href="/add" >
+              <a className={classes.link} href="/add/new" >
                 <ListItemText primary="Add Document">
                 </ListItemText>
               </a>
