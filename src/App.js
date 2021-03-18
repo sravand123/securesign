@@ -15,6 +15,8 @@ import Status from './Status';
 import DocumentInfo from './DocumentInfo';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import Document from './Document';
+import SignatureBox from './SignatureBox';
+import SignatureTabs from './SignatureTabs';
 
 const THEME = createMuiTheme({
  
@@ -60,7 +62,13 @@ function App() {
             <Document></Document>
           </>
         )}></Route>
-
+        <Route exact path="/sig" render={protectRoute(
+          <>
+            <NavBar></NavBar>
+            <SignatureTabs></SignatureTabs>
+            {/* <SignatureBox></SignatureBox> */}
+          </>
+        )}></Route>
         <Route exact path="/" render={protectRoute(
           <>
             <NavBar></NavBar>

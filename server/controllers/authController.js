@@ -11,9 +11,12 @@ exports.google_callback = function(req,res,next){
     var query = { email: req.user.email },
       update = { email: req.user.email, name: req.user.name,image:req.user.image },
       options = { upsert: true, new: true, setDefaultsOnInsert: true };
-
+     
     User.findOneAndUpdate(query, update, options, function (error, result) {
-      if (error) res.send(error);
+      if (error) {
+        console.log(error);
+        res.status(500).json({message:'Server Error'});
+      }
       else {
         res.cookie('JWT', req.user.token, {
           maxAge: 3600_000,

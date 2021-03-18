@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Page from './Page';
 import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import { grey } from '@material-ui/core/colors';
@@ -12,6 +12,9 @@ import CreateIcon from '@material-ui/icons/Create';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import Comments from './Comments';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import  {faPenNib}  from '@fortawesome/free-solid-svg-icons'
+import SignatureContext from './SignatureContext';
 export default function Pdf(props) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
     const [state, _setState] = useState({
@@ -19,12 +22,22 @@ export default function Pdf(props) {
         pages: [],
         name: null,
         pdf: null,
-        open: false
+        open: false,
+        mode:'none'
     })
+    const [signatureData,setSignatureData] = useState(null);
     const setState = (data) => {
         _setState({ ...state, ...data });
     }
-
+    const toBase64 = (buffer)=>{
+        let TYPED_ARRAY = new Uint8Array(buffer);
+        const STRING_CHAR = TYPED_ARRAY.reduce((data, byte)=> {
+          return data + String.fromCharCode(byte);
+          }, '');
+        let base64String = btoa(STRING_CHAR);
+          return 'data:image/png;base64, '+base64String;
+    
+      }
     useEffect(() => {
 
         setState({ pdf: props.pdf });
@@ -42,6 +55,22 @@ export default function Pdf(props) {
                 })
             }
         });
+        axios.get('/api/users/getsignatures',{withCredentials:true}).then(
+            (data)=>{
+                let signature = null;
+                let imageSignature= null;
+                if(data.data.signature)
+                 signature = toBase64(data.data.signature.data);
+                 if(data.data.imageSignature)
+                 imageSignature =toBase64(data.data.imageSignature.data);
+                console.log(signature);
+                setSignatureData({
+                  signature:signature,
+                  imageSignature:imageSignature,
+                  defaultSignature:data.data.defaultSignature
+                })
+            }
+        )
 
 
 
@@ -66,6 +95,8 @@ export default function Pdf(props) {
                     page={page}
                     scale={state.scale}
                     pageNum={index}
+                    mode = {state.mode}
+                    setState = {setState}
 
                 />
             );
@@ -85,10 +116,11 @@ export default function Pdf(props) {
             }
         )
     }
+   
     const classes = useStyles();
     return (
+          <SignatureContext.Provider value={signatureData}>
 
-        <React.Fragment  >
             <AppBar position="static" style={{ backgroundImage: CONSTS.backgroundImage }}>
                 <Toolbar>
                     <Typography variant="body1" className={classes.title}>
@@ -97,6 +129,7 @@ export default function Pdf(props) {
                     <div style={{ marginLeft: 'auto' }}>
                         <Button color="inherit" onClick={() => { setState({ open: true }) }}><CommentIcon></CommentIcon></Button>
                         <Button color="inherit" onClick={() => { setState({ open: false }) }} ><CreateIcon></CreateIcon></Button>
+                        <Button color="inherit" onClick={() => { setState({ mode: 'sign' }) }} ><FontAwesomeIcon icon={faPenNib} size='lg'></FontAwesomeIcon></Button>
 
                     </div>
 
@@ -127,7 +160,7 @@ export default function Pdf(props) {
 
 
             </Grid>
-        </React.Fragment>
+          </SignatureContext.Provider>  
 
     );
 }

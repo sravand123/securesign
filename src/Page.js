@@ -7,6 +7,7 @@ export default function Page(props) {
 
     const divRef = useRef(null);
     const canvasRef = useRef(null);
+    const [images,setImages] = useState([]);
     useEffect(() => {
         let viewport = props.page.getViewport({ scale: props.scale });
         let canvas = canvasRef.current;
@@ -32,12 +33,42 @@ export default function Page(props) {
             paddingBottom: '5px',
         }
     }))
+    const canvasClick  = (event)=>{
+        if(props.mode==='sign'){
+            
+            let newImage = {x:event.nativeEvent.offsetX,y:event.nativeEvent.offsetY,imagewidth:200,imageheight:50};
+            setImages([...images,newImage]);
+            props.setState({mode:'none'});
+        }
+
+    }
+    const imageChange  = (id,state)=>{
+      
+        let newImages = images;
+        newImages[id] ={...newImages[id],...state};
+        setImages(newImages);
+
+    }
+    const imageDelete  = (id)=>{
+       
+        let newImages= images;
+        newImages = newImages.filter((image,index)=> (index!==id));
+        setImages(newImages);
+ 
+    }  
+   
     const classes = useStyles();
     return (
         <React.Fragment>
+   
             <div ref={divRef} className={classes.root}>
-                <canvas  className={classes.root,"__page"+props.pageNum} ref={canvasRef} />
 
+                <canvas onClick={canvasClick} className={classes.root,"__page"+props.pageNum} ref={canvasRef} />
+                {
+                    images.map((image,id)=>{
+                      return  (<DraggableImage key={id} id={id} imageDelete= {imageDelete} imageChange={imageChange} pageNum = {props.pageNum} image={image}></DraggableImage>)
+                    })
+                }
             </div>
         </React.Fragment>
     )

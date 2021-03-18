@@ -5,6 +5,9 @@ const userSchema = new mongoose.Schema(
     name: String,
     image:String,
     signedUp:Boolean,
+    signature:Buffer,
+    imageSignature:Buffer,
+    defaultSignature:{type:Number,default:0},
     ownedDocuments: [
       {
         type: mongoose.Schema.Types.ObjectId,

@@ -198,7 +198,7 @@ export default function NavBar(props) {
               <ListItemIcon>
                 <ExitToApp></ExitToApp>
               </ListItemIcon>
-              <ListItemText primary={"Logout"}></ListItemText>
+              <ListItemText primary={"Logout"} onClick={logout}></ListItemText>
             </ListItem>
           </List>
 

@@ -22,6 +22,11 @@ router.post('/documents/:id/reject', documentController.rejectDocument);
 router.get('/documents/:id/status', documentController.getStatus);
 
 router.get('/documents/:id', documentController.getDocment);
+router.post('/users/uploadsignature', userController.uploadSignature);
+router.post('/users/defaultsignature', userController.setDefaultSignature);
+
+router.get('/users/getsignatures', userController.getSignatures);
+
 router.get('/users', userController.getUserNamesList);
 
 module.exports = router;

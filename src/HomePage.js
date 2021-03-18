@@ -1,12 +1,13 @@
-import { Button, Grid, makeStyles } from "@material-ui/core";
+import { Button, Card, CardContent, Grid, makeStyles, Paper, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 import React, { Component, useEffect } from 'react';
 import BackupIcon from '@material-ui/icons/Backup';
 import axios from "axios";
 import CONSTS from "./constants";
 import CustomButton from "./CustomButton";
+import Signature from './sig.png'
 export default function HomePage() {
-  
+
     const useStyles = makeStyles((theme) => ({
         root: {
             display: 'flex',
@@ -76,7 +77,7 @@ export default function HomePage() {
             alignItems: 'center',
             justifyContent: 'center'
         },
-        thirdItem:{
+        thirdItem: {
             '&:hover': {
                 boxShadow: CONSTS.boxShadow
             },
@@ -91,7 +92,8 @@ export default function HomePage() {
     const classes = useStyles();
     return (
         <React.Fragment>
-            <div className={classes.root} >
+
+            {/* <div className={classes.root} >
                 <div className={classes.items} style={{
                     backgroundColor: '#fbb034',
                     backgroundImage: 'linear-gradient(315deg, #fbb034 0%, #ffdd00 74%)'
@@ -119,10 +121,63 @@ export default function HomePage() {
                 </div>
 
 
-            </div>
+            </div> */}
+            <Grid container justify='space-around' style={{ justifyContent: 'center' }}  >
+                <Grid  onClick={()=>{window.location.replace('/sig')}} item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#6b5b95', margin: '5px', color: 'white', fontFamily: 'poppins',cursor:'pointer'
+                }}>
+                    <div style={{ height: '15vh' }}>
+
+                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'poppins',fontWeight:'bold' }}>Manage Your</Typography>
+                    </div>
+                    <div>
+
+                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'Dancing Script ,cursive',fontWeight:'bold' }} >Signature</Typography>
+                    </div>
+
+                </Grid>
+                <Grid item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#feb236', margin: '5px', color: 'white', fontFamily: 'poppins'
+                }}>
+                    <div style={{ height: '15vh' }}>
+
+                        <Typography variant='h5' style={{ padding: '15px' ,fontFamily: 'poppins',fontWeight:'bold'}}>Expiring Soon</Typography>
+                    </div>
+                    <div>
+
+                        <Typography variant='h5' style={{ padding: '15px' }} >20</Typography>
+                    </div>
+                </Grid>
+                <Grid item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#d64161', margin: '5px', color: 'white', fontFamily: 'poppins'
+                }}>
+                    <div style={{ height: '15vh' }}>
+
+                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'poppins',fontWeight:'bold' }}>Completed</Typography>
+                    </div>
+                    <div>
+
+                        <Typography variant='h5' style={{ padding: '15px', marginBottom: '0px' }} >20</Typography>
+                    </div>
+
+                </Grid>
+                <Grid item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#ff7b25', margin: '5px', color: 'white', fontFamily: 'poppins'
+                }}>
+                    <div style={{ height: '15vh' }}>
+
+                        <Typography variant='h5' style={{ padding: '15px',fontFamily:'poppins',fontWeight:'bold' }}>Drafts</Typography>
+                    </div>
+                    <div>
+
+                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'poppins', marginBottom: '0px' }} >20</Typography>
+                    </div>
+                </Grid>
+            </Grid>
             <div className={classes.outerBox}  >
                 <div className={classes.innerBox} >
-                    <CustomButton text="Select File" icon={BackupIcon}></CustomButton>
+                    <CustomButton text=" Add Document" onClick={() => { window.location.replace('/add/new') }} icon={BackupIcon}></CustomButton>
+
                 </div>
             </div>
         </React.Fragment>
