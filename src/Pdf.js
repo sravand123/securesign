@@ -25,6 +25,7 @@ export default function Pdf(props) {
         open: false,
         mode:'none'
     })
+    const [images,setImages] = useState(null);
     const [signatureData,setSignatureData] = useState(null);
     const setState = (data) => {
         _setState({ ...state, ...data });
@@ -46,6 +47,7 @@ export default function Pdf(props) {
         const loadingTask = pdfjsLib.getDocument(props.pdf);
 
         loadingTask.promise.then(function (pdf) {
+            setImages(Array(pdf.numPages));
             for (let i = 0; i < pdf.numPages; i++) {
                 pdf.getPage(i + 1).then(page => {
                     pdfPages = [...pdfPages, page]
@@ -75,6 +77,11 @@ export default function Pdf(props) {
 
 
     }, [props]);
+    const imagesChange = (pageNum,data)=>{
+        let newImages = images;
+        newImages[pageNum] = data;
+        setImages(newImages);
+    }
     const useStyles = makeStyles(({
         root: {
             height: '88vh',
@@ -97,13 +104,13 @@ export default function Pdf(props) {
                     pageNum={index}
                     mode = {state.mode}
                     setState = {setState}
-
+                    imagesChange = {imagesChange}
                 />
             );
         })
     }
     const handleSign = ()=>{
-        axios.post('/api/documents/'+localStorage.getItem('current_id')+'/sign',{},{withCredentials:true}).then(
+        axios.post('/api/documents/'+localStorage.getItem('current_id')+'/sign',{modifications:images,scale:state.scale},{withCredentials:true}).then(
             (data)=>{
 
             }

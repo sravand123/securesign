@@ -114,7 +114,7 @@ export default function DocumentInfo(props) {
                 <SignersTable signers={props.document.signers}></SignersTable>
               </div>
             </Grid>
-            <Grid item xs={10} sm={4} hidden={value !== 0}>
+            <Grid item xs={10} sm={4} hidden={value !== 0} style={{maxHeight:'80vh',overflowY:'scroll'}}>
               <BasicTimeline timeline={props.document.timeline}></BasicTimeline>
             </Grid>
           </Grid>

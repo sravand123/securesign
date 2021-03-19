@@ -47,6 +47,7 @@ export default function Page(props) {
         let newImages = images;
         newImages[id] ={...newImages[id],...state};
         setImages(newImages);
+        props.imagesChange(props.pageNum,newImages);
 
     }
     const imageDelete  = (id)=>{
@@ -54,6 +55,8 @@ export default function Page(props) {
         let newImages= images;
         newImages = newImages.filter((image,index)=> (index!==id));
         setImages(newImages);
+        props.imagesChange(props.pageNum,newImages);
+
  
     }  
    

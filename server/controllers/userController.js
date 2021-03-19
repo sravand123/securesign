@@ -1,6 +1,7 @@
 const Binary = require('mongodb').Binary;
 const User = require('../models/user');
 const fs = require('fs');
+const Jimp = require("jimp")
 
 function getEmail(req, res) {
     if (!req.cookies.JWT) {
@@ -25,15 +26,26 @@ exports.getUserNamesList = async(req,res,next)=>{
         res.status(500).json({ error: "Internal Server Error" });   
     }
 }
+const convertToPng = async(file)=>{
+    
+       let image =  await Jimp.read(file);
+       let imageBuffer  = await image.getBufferAsync(Jimp.MIME_PNG);
+       return imageBuffer;
+    
+}
+
 exports.uploadSignature = async(req,res,next)=>{
     try{
         let email = getEmail(req,res);
         console.log(email);
         let user =  await User.findOne({email:email},{signature:1,imageSignature:1}).exec();
-      let image = req.files.doc;
+        let image = req.files.doc;
+        console.log(image);
         let imagePath = image.tempFilePath;
-        
-        let imageBuffer  = fs.readFileSync(imagePath);
+      
+        let imageBuffer  = await convertToPng(imagePath);
+        console.log(imageBuffer);
+       
         console.log(req.body.type);
         if(req.body.type==="handwritten"){
            user.signature  = Binary(imageBuffer);

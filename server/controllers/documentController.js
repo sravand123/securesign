@@ -1,3 +1,4 @@
+const { PDFDocument, StandardFonts, rgb } = require('pdf-lib')
 const { google } = require('googleapis');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
@@ -7,6 +8,8 @@ const User = require('../models/user');
 const { v4: uuidv4 } = require('uuid');
 const Agenda = require('agenda');
 const moment = require('moment');
+const Jimp = require("jimp")
+
 const { body, validationResult, sanitizeBody } = require("express-validator");
 require('dotenv').config();
 const mongoConnectionString = process.env.DB;
@@ -44,7 +47,7 @@ exports.getUserDocuments = (req, res, next) => {
         else {
             res.status(200).json({
                 ownedDocuments: resp.ownedDocuments,
-                sharedDocuments: resp.sharedDocuments.filter((document)=>document.status==='sent')
+                sharedDocuments: resp.sharedDocuments.filter((document) => document.status === 'sent')
             });
         }
     })
@@ -62,7 +65,7 @@ exports.uploadDocument = async (req, res, next) => {
     documentData.description = req.body.description;
     documentData.owner = getEmail(req);
     documentData.timeline = [{ action: 'created', time: new Date(), email: email }];
-    documentData.status  = 'uploaded';
+    documentData.status = 'uploaded';
     try {
 
         let response = await Document.create(documentData);
@@ -84,11 +87,11 @@ exports.addSigners = async (req, res, next) => {
     try {
         signers.forEach(async (signer, index) => {
             agenda.define("set_document_expired", async (job) => {
-                let document = await Document.findById(job.attrs.data.documentId, { signers: 1, timeline: 1,status:1 }).exec();
+                let document = await Document.findById(job.attrs.data.documentId, { signers: 1, timeline: 1, status: 1 }).exec();
                 let signers = document.signers;
                 let timeline = document.timeline;
 
-                timeline.push({ action: 'expired', time: new Date(), email:job.attrs.data.email });
+                timeline.push({ action: 'expired', time: new Date(), email: job.attrs.data.email });
                 signers.forEach((signer, index) => {
                     if (signer.email === job.attrs.data.email) signers[index].status = 'expired';
                 })
@@ -217,133 +220,181 @@ exports.sendEmail = async (req, res, next) => {
 
 };
 
-exports.getDocment = async (req,res,next)=>{
-    try{
+exports.getDocment = async (req, res, next) => {
+    try {
 
-        let documentId  = req.params.id;
-        let document  = await Document.findById(documentId).exec();
-        let email = getEmail(req,res);
+        let documentId = req.params.id;
+        let document = await Document.findById(documentId).exec();
+        let email = getEmail(req, res);
         let signers = document.signers;
-        signers.forEach((signer,index)=>{
-             if(signer.email===email){
-                 if(!signer.viewed){
+        signers.forEach((signer, index) => {
+            if (signer.email === email) {
+                if (!signer.viewed) {
                     let timeline = document.timeline;
                     timeline.push({ action: 'viewed', time: new Date(), email: getEmail(req, res) });
-                    signers[index].viewed = true; 
+                    signers[index].viewed = true;
                     document.timeline = timeline;
                 }
-             }
-         });
+            }
+        });
         console.log(signers);
-        
-        document.signers  = signers;
+
+        document.signers = signers;
         await document.save();
         res.status(200).json(document);
     }
-    catch(err){
+    catch (err) {
         res.status(500).json({ err: "Internal Server Error" });
     }
 }
-exports.getComments = async (req,res,next)=>{
-    try{
+exports.getComments = async (req, res, next) => {
+    try {
         let documentId = req.params.id;
-        let document  =await Document.findById(documentId,{comments:1}).populate({
+        let document = await Document.findById(documentId, { comments: 1 }).populate({
             path: 'comments',
             populate: {
-                path: 'user' ,
-                select:{email:1,name:1,image:1}   
+                path: 'user',
+                select: { email: 1, name: 1, image: 1 }
             }
-    }).exec();
+        }).exec();
         console.log(document);
         res.status(200).json(document);
     }
-    catch(err){
+    catch (err) {
         res.status(500).json({ err: "Internal Server Error" });
     }
 }
-exports.postComment = async(req,res,next)=>{
-    try{
+exports.postComment = async (req, res, next) => {
+    try {
         let documentId = req.params.id;
-        let document  =await Document.findById(documentId,{comments:1});
-        let user  = await User.findOne({email:getEmail(req,res)},{_id:1}).exec();
-        let comments  = document.comments;
-        comments= [...comments, {user:user.id,comment:req.body.message}];
+        let document = await Document.findById(documentId, { comments: 1 });
+        let user = await User.findOne({ email: getEmail(req, res) }, { _id: 1 }).exec();
+        let comments = document.comments;
+        comments = [...comments, { user: user.id, comment: req.body.message }];
         console.log(comments);
         document.comments = comments;
         await document.save();
-        res.status(200).json({message:'ok'});
+        res.status(200).json({ message: 'ok' });
 
     }
-    catch(err){
-        res.status(500).json({ err: "Internal Server Error" }); 
+    catch (err) {
+        res.status(500).json({ err: "Internal Server Error" });
     }
 }
-exports.sigDocument = async (req,res,next)=>{
-    try{
-        
-        let documentId  = req.params.id;
-        let document  = await Document.findById(documentId,{signers:1,timeline:1}).exec();
-        let email = getEmail(req,res);
+exports.sigDocument = async (req, res, next) => {
+    try {
+        let modifications = req.body.modifications;
+        let scale = req.body.scale;
+
+        let email = getEmail(req, res);
+        let documentId = req.params.id;
+        let document = await Document.findById(documentId, { signers: 1, timeline: 1, buffer: 1 }).exec();
+        let user = await User.findOne({ email: email }, { signature: 1, imageSignature: 1, defaultSignature: 1 });
+
+
+
+
+
+
+
+
+
+
         let signers = document.signers;
-        signers.forEach((signer,index)=>{
-             if(signer.email===email){
-                 if(signer.status!=='signed' && signer.status!=='rejected' && signer.status!=='expired' ){
+        await signers.forEach(async (signer, index) => {
+            if (signer.email === email) {
+                if (signer.status !== 'signed' && signer.status !== 'rejected' && signer.status !== 'expired') {
+
+
+
+                    const pdfDoc = await PDFDocument.load(document.buffer);
+                    let pngImageBytes = (user.defaultSignature == 0 ? user.signature : user.imageSignature);
+                    const pngImage = await pdfDoc.embedPng(pngImageBytes);
+                    console.log(pngImage);
+                    const pages = pdfDoc.getPages();
+                    console.log(modifications);
+                    modifications.forEach((modification, index) => {
+
+                        if (modification) {
+                            modification.forEach((image, id) => {
+                                let { width, height } = pages[index].getSize();
+                                let imageDims = {
+                                    x: image.x / scale,
+                                    y: height - ((image.y + image.imageheight) / (scale)),
+                                    width: (image.imagewidth / scale),
+                                    height: (image.imageheight / scale)
+                                }
+                                console.log(imageDims);
+                                pages[index].drawImage(pngImage, imageDims)
+                            })
+                        }
+                    })
+                    let pdfBytes = await pdfDoc.save();
+                    document.buffer = Binary(pdfBytes);
+
+
+
+
+
+
                     let timeline = document.timeline;
                     timeline.push({ action: 'signed', time: new Date(), email: getEmail(req, res) });
-                    signers[index].status = 'signed'; 
+                    signers[index].status = 'signed';
+                    console.log(signers[index]);
                     document.timeline = timeline;
+
+                    document.signers = signers;
+                    await document.save();
                 }
-             }
-         });
-        
-        document.signers  = signers;
-        await document.save();
-        res.status(200).json(document);       
+            }
+        });
+       
+        res.status(200).json({message:'ok'});
     }
-    catch(err){
-        res.status(500).json({ err: "Internal Server Error" }); 
+    catch (err) {
+        res.status(500).json({ err: "Internal Server Error" });
     }
 }
 
-exports.rejectDocument = async(req,res,next)=>{
-    try{
-        let documentId  = req.params.id;
-        let document  = await Document.findById(documentId,{signers:1,timeline:1}).exec();
-        let email = getEmail(req,res);
+exports.rejectDocument = async (req, res, next) => {
+    try {
+        let documentId = req.params.id;
+        let document = await Document.findById(documentId, { signers: 1, timeline: 1 }).exec();
+        let email = getEmail(req, res);
         let signers = document.signers;
-        signers.forEach((signer,index)=>{
-             if(signer.email===email){
-                 if(signer.status!=='signed' && signer.status!=='rejected' && signer.status!=='expired' ){
+        signers.forEach((signer, index) => {
+            if (signer.email === email) {
+                if (signer.status !== 'signed' && signer.status !== 'rejected' && signer.status !== 'expired') {
                     let timeline = document.timeline;
                     timeline.push({ action: 'rejected', time: new Date(), email: getEmail(req, res) });
-                    signers[index].status = 'rejected'; 
+                    signers[index].status = 'rejected';
                     document.timeline = timeline;
                 }
-             }
-         });
-        
-        document.signers  = signers;
+            }
+        });
+
+        document.signers = signers;
         await document.save();
-        res.status(200).json(document);  
+        res.status(200).json(document);
     }
-    catch(err){
-        res.status(500).json({ err: "Internal Server Error" }); 
+    catch (err) {
+        res.status(500).json({ err: "Internal Server Error" });
     }
 }
 
-exports.getStatus = async(req,res,next)=>{
-    try{
-        let documentId  = req.params.id;
-        let document  = await Document.findById(documentId,{status:1}).exec();
-        if(document){
+exports.getStatus = async (req, res, next) => {
+    try {
+        let documentId = req.params.id;
+        let document = await Document.findById(documentId, { status: 1 }).exec();
+        if (document) {
             res.status(200).json(document);
         }
-        else{
-            res.status(200).json({status:'not_uploaded'});
-        }   
+        else {
+            res.status(200).json({ status: 'not_uploaded' });
+        }
     }
-    catch(err){
-        res.status(500).json({ err: "Internal Server Error" }); 
+    catch (err) {
+        res.status(500).json({ err: "Internal Server Error" });
 
     }
 }
