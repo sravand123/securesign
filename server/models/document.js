@@ -54,7 +54,8 @@ const documentSchema = new mongoose.Schema(
         email:String
 
       }
-    ]
+    ],
+    lastModifiedHash : String
   }
 );
 const Document = mongoose.model('Document', documentSchema);

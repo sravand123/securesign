@@ -8,6 +8,9 @@ import Tab from "@material-ui/core/Tab";
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import PerfectScrollbar from "react-perfect-scrollbar";
+import "react-perfect-scrollbar/dist/css/styles.css";
+
 import {
   Typography,
   Box,
@@ -24,6 +27,7 @@ import BasicTimeline from "./TimeLine";
 import CustomButton from "./CustomButton";
 import CONSTS from "./constants";
 import SignersTable from './SignersTable';
+import { grey } from "@material-ui/core/colors";
 export default function DocumentInfo(props) {
 
   const [value, setValue] = React.useState(0);
@@ -56,7 +60,7 @@ export default function DocumentInfo(props) {
               value={value}
               indicatorColor="secondary"
 
-              style={{ backgroundImage: CONSTS.backgroundImage, color: 'white' }}
+              style={{ background:CONSTS.backgroundImage,color:'white'}}
               onChange={handleChange}
               centered
             >
@@ -114,8 +118,11 @@ export default function DocumentInfo(props) {
                 <SignersTable signers={props.document.signers}></SignersTable>
               </div>
             </Grid>
-            <Grid item xs={10} sm={4} hidden={value !== 0} style={{maxHeight:'80vh',overflowY:'scroll'}}>
-              <BasicTimeline timeline={props.document.timeline}></BasicTimeline>
+            <Grid item xs={10} sm={4} hidden={value !== 0} style={{ height: "75vh",textAlign:'right' }} >
+
+             <PerfectScrollbar>
+             <BasicTimeline timeline={props.document.timeline}></BasicTimeline>
+               </PerfectScrollbar> 
             </Grid>
           </Grid>
 

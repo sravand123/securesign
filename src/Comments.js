@@ -6,6 +6,8 @@ import CustomButton from './CustomButton';
 import SendIcon from '@material-ui/icons/Send';
 import CONSTS from './constants';
 import axios from 'axios';
+import PerfectScrollbar from "react-perfect-scrollbar";
+import "react-perfect-scrollbar/dist/css/styles.css";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -51,7 +53,10 @@ export default function Comments(props) {
   return (
     <Grid container alignItems='flex-end'  style={{height:'88vh',flexDirection:'row'}}>
       <Grid item xs={12} style={{maxHeight:'10vh',alignSelf:'flex-start'}} >
-        <List style={{maxHeight:'75vh',overflowY:'scroll'}}>
+        <div style={{height:'75vh'}}>
+      <PerfectScrollbar>
+        
+        <List >
           {comments.map((comment,index)=>{
             return(
           <ListItem key={index} >
@@ -65,6 +70,8 @@ export default function Comments(props) {
           })}
          
         </List>
+      </PerfectScrollbar>
+        </div>
       </Grid>
 
       <Grid item xs={9} >

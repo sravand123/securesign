@@ -12,6 +12,7 @@ router.get('', function (req, res) {
 });
 router.get('/documents', documentController.getUserDocuments);
 router.post('/documents', documentController.uploadDocument);
+router.post('/documents/verify', documentController.verifyDocument);
 router.post('/documents/drive/:id', documentController.uploadDocumentFromDrive);
 router.post('/documents/:id/signers', documentController.addSigners);
 router.post('/documents/:id/email', documentController.sendEmail);

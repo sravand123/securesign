@@ -9,8 +9,7 @@ export default function Document(props) {
     const [comments, setComments] = useState([]);
     const [name,setName]= useState('');
     let params = useParams();
-
-    useEffect(() => {
+    const loadPdf = ()=>{
         axios.get('/api/documents/' + params.fileId, { withCredentials: 'true' }).then(
             resp => {
                 setDocument(resp.data.buffer);
@@ -21,13 +20,16 @@ export default function Document(props) {
             },
             (err) => console.log(err)
         )
+    }
+    useEffect(() => {
+        loadPdf();
 
     }, [])
 
     return (
         <React.Fragment>
             {document != null ?
-                (<Pdf pdf={document} comments={comments} name={name}></Pdf>) :
+                (<Pdf pdf={document} loadPdf = {loadPdf} comments={comments} name={name}></Pdf>) :
                 (<Loader open={true}></Loader>)
             }
         </React.Fragment>

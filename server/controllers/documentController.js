@@ -9,6 +9,8 @@ const { v4: uuidv4 } = require('uuid');
 const Agenda = require('agenda');
 const moment = require('moment');
 const Jimp = require("jimp")
+var shasum = require('shasum')
+
 
 const { body, validationResult, sanitizeBody } = require("express-validator");
 require('dotenv').config();
@@ -68,11 +70,18 @@ exports.uploadDocument = async (req, res, next) => {
     documentData.status = 'uploaded';
     try {
 
-        let response = await Document.create(documentData);
+        let document = await Document.create(documentData);
+        let pdfDoc =await PDFDocument.load(document.buffer);
+        pdfDoc.setKeywords([document._id]);
+        let pdfBytes = await pdfDoc.save();
+        document.buffer = Binary(pdfBytes);
+        console.log(pdfBytes);
+        document.lastModifiedHash = shasum(pdfBytes);
+        await document.save();
         let user = await User.findOne({ 'email': email }).exec();
-        user.ownedDocuments.push(response._id);
+        user.ownedDocuments.push(document._id);
         await user.save();
-        res.status(200).json({ _id: response._id });
+        res.status(200).json({ _id: document._id });
     } catch (err) {
         res.status(500).json({ error: "Internal Server Error" });
     }
@@ -192,7 +201,7 @@ exports.sendEmail = async (req, res, next) => {
     try {
 
         let fileId = req.params.id;
-        let document = await Document.findById(fileId, { signers: 1 });
+        let document = await Document.findById(fileId, { signers: 1,status:1 });
         document.status = 'sent';
         await document.save();
         let signers = document.signers;
@@ -331,8 +340,9 @@ exports.sigDocument = async (req, res, next) => {
                     })
                     let pdfBytes = await pdfDoc.save();
                     document.buffer = Binary(pdfBytes);
-
-
+                    console.log(pdfBytes);
+                    document.lastModifiedHash = shasum( pdfBytes );
+                    
 
 
 
@@ -394,6 +404,52 @@ exports.getStatus = async (req, res, next) => {
         }
     }
     catch (err) {
+        res.status(500).json({ err: "Internal Server Error" });
+
+    }
+}
+
+exports.verifyDocument = async(req,res,next)=>{
+    try{
+
+        let document = req.files.doc;
+        let documentPath = document.tempFilePath;
+        let documentBufferData = fs.readFileSync(documentPath);
+        let pdfDoc = await PDFDocument.load((documentBufferData),{
+            updateMetadata: false 
+        });
+        let keywords = pdfDoc.getKeywords();
+        let pdfBytes = await pdfDoc.save();
+        let uploadedDocumentHash  = shasum(pdfBytes);
+        
+        console.log(pdfBytes);
+        if(keywords && keywords.length>0){
+            let id = keywords;
+            let doc = await Document.findById(id).exec();
+            if(doc){
+
+                console.log(doc.name);
+                console.log(doc.lastModifiedHash);
+                console.log(uploadedDocumentHash);
+                if(doc.lastModifiedHash===uploadedDocumentHash){
+                    res.status(200).json({verified:true,document:doc});
+                }
+                else{
+                    res.status(200).json({verified:false});
+    
+                }
+            }
+            else{
+                res.status(200).json({verified:false});
+
+            }
+        }
+        else{
+            res.status(200).json({verified:false});
+        }
+    }
+    
+    catch(err){
         res.status(500).json({ err: "Internal Server Error" });
 
     }

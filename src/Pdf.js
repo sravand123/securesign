@@ -13,8 +13,12 @@ import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import Comments from './Comments';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import  {faPenNib}  from '@fortawesome/free-solid-svg-icons'
+import  {faDownload, faPenNib}  from '@fortawesome/free-solid-svg-icons'
 import SignatureContext from './SignatureContext';
+import * as  fileDownload from 'js-file-download';
+
+import PerfectScrollbar from "react-perfect-scrollbar";
+import "react-perfect-scrollbar/dist/css/styles.css";
 export default function Pdf(props) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
     const [state, _setState] = useState({
@@ -86,7 +90,6 @@ export default function Pdf(props) {
         root: {
             height: '88vh',
             maxHeight: '88vh',
-            overflowX: 'scroll',
             backgroundColor: grey[100]
         },
         title: {
@@ -109,10 +112,11 @@ export default function Pdf(props) {
             );
         })
     }
+    
     const handleSign = ()=>{
         axios.post('/api/documents/'+localStorage.getItem('current_id')+'/sign',{modifications:images,scale:state.scale},{withCredentials:true}).then(
             (data)=>{
-
+                props.loadPdf();
             }
         )
     }
@@ -123,7 +127,19 @@ export default function Pdf(props) {
             }
         )
     }
-   
+    function toArrayBuffer(buf) {
+        var ab = new ArrayBuffer(buf.length);
+        var view = new Uint8Array(ab);
+        for (var i = 0; i < buf.length; ++i) {
+            view[i] = buf[i];
+        }
+        return ab;
+    }
+   const download = async()=>{
+       let data  =toArrayBuffer(props.pdf.data);
+       fileDownload(data,'signed.pdf');
+  
+   }
     const classes = useStyles();
     return (
           <SignatureContext.Provider value={signatureData}>
@@ -137,6 +153,7 @@ export default function Pdf(props) {
                         <Button color="inherit" onClick={() => { setState({ open: true }) }}><CommentIcon></CommentIcon></Button>
                         <Button color="inherit" onClick={() => { setState({ open: false }) }} ><CreateIcon></CreateIcon></Button>
                         <Button color="inherit" onClick={() => { setState({ mode: 'sign' }) }} ><FontAwesomeIcon icon={faPenNib} size='lg'></FontAwesomeIcon></Button>
+                        <Button color="inherit" onClick={() => { download() }} ><FontAwesomeIcon icon={faDownload} size='lg'></FontAwesomeIcon></Button>
 
                     </div>
 
@@ -147,10 +164,14 @@ export default function Pdf(props) {
             <Grid container>
                 <Grid item xs={9}>
                     <div className={classes.root}>
+                        <PerfectScrollbar>
+
                         {generatePages()}
+                        </PerfectScrollbar>
                     </div>
                 </Grid>
                 {state.open ? (<Grid item xs={3}>
+
                     <Comments open={state.open} setState={setState}></Comments>
                 </Grid>) : (<Grid item xs={3} justify='center' alignItems='center'>
                     <Grid container style={{width:'100%',height:'100%'}} justify='center' alignItems='center'>

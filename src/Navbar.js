@@ -106,6 +106,7 @@ export default function NavBar(props) {
           <Button className={classes.navItem} color="inherit" href="/">Home</Button>
           <Button className={classes.navItem} color="inherit" href="/add/new">add Document</Button>
           <Button className={classes.navItem} color="inherit" href="/status">Status</Button>
+          <Button className={classes.navItem} color="inherit" href="/verify">Verify</Button>
 
           <div className={classes.navItem}>
             <IconButton

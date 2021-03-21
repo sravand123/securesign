@@ -47,7 +47,7 @@ export default function MySignatures(props){
                     <img src={props.signatures.imageSignature} style={{width:'60%',padding:'20px'}}></img>
                     </Grid>
                     <Grid item xs={11} sm={6}>
-                       <CustomButton text="Replace" style={{margin:'5px'}} onClick = {()=>props.setValue(1)} ></CustomButton> 
+                       <CustomButton text="Replace" style={{margin:'5px'}} onClick = {()=>props.setValue(2)} ></CustomButton> 
                        <Box hidden={default_===1 }>
 
                        <CustomButton text={default_===1 ? 'default signature' : 'set as default'} style={{margin:'5px'}} onClick={()=>props.changeDefaultSignature(1)} ></CustomButton> 

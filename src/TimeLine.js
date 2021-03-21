@@ -53,7 +53,7 @@ export default function BasicTimeline(props) {
     <ThemeProvider theme={theme}>
         <div >
 
-      <Timeline align='right'>
+      <Timeline align='right' >
         {props.timeline.map((el,i)=>{
            return(
             <TimelineItem>
