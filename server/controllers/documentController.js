@@ -163,7 +163,7 @@ exports.uploadDocumentFromDrive = async (req, res, next) => {
 
     client.credentials = { access_token: access_token };
     const drive = google.drive({ version: 'v3', auth: client });
-    let tempFilePath = __dirname + "/files/" + uuidv4() + ".pdf";
+    let tempFilePath = "/tmp/" + uuidv4() + ".pdf";
 
     fs.appendFile(tempFilePath, null, (err, resp) => {
         if (err) {
