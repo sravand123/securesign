@@ -3,7 +3,7 @@ const passport = require("passport");
 
 
 
-exports.user_signin=passport.authenticate('google', { scope: ["profile", "email", "https://www.googleapis.com/auth/drive.file"] })
+exports.user_signin=passport.authenticate('google', { scope: ["profile", "email", "https://www.googleapis.com/auth/drive"] })
 
 
 

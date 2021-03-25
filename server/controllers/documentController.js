@@ -71,7 +71,7 @@ exports.uploadDocument = async (req, res, next) => {
     try {
 
         let document = await Document.create(documentData);
-        let pdfDoc =await PDFDocument.load(document.buffer);
+        let pdfDoc = await PDFDocument.load(document.buffer);
         pdfDoc.setKeywords([document._id]);
         let pdfBytes = await pdfDoc.save();
         document.buffer = Binary(pdfBytes);
@@ -106,7 +106,6 @@ exports.addSigners = async (req, res, next) => {
                 })
                 document.timeline = timeline;
                 document.signers = signers;
-                document.status = 'added_signers'
                 await document.save();
             });
             (async function () {
@@ -148,6 +147,7 @@ exports.addSigners = async (req, res, next) => {
         document.signers = signers;
         document.sequential = sequential;
         document.isOwnerSigner = isOwnerSigner;
+        document.status = 'added_signers';
         await document.save();
         res.status(200).json({ message: 'ok' });
     }
@@ -165,7 +165,7 @@ exports.uploadDocumentFromDrive = async (req, res, next) => {
     const drive = google.drive({ version: 'v3', auth: client });
     let tempFilePath = __dirname + "/files/" + uuidv4() + ".pdf";
 
-    fs.appendFile(tempFilePath, (err, resp) => {
+    fs.appendFile(tempFilePath, null, (err, resp) => {
         if (err) {
             res.status(500).json({ err: "Internal Server Error" });
         }
@@ -201,7 +201,7 @@ exports.sendEmail = async (req, res, next) => {
     try {
 
         let fileId = req.params.id;
-        let document = await Document.findById(fileId, { signers: 1,status:1 });
+        let document = await Document.findById(fileId, { signers: 1, status: 1 });
         document.status = 'sent';
         await document.save();
         let signers = document.signers;
@@ -303,12 +303,6 @@ exports.sigDocument = async (req, res, next) => {
 
 
 
-
-
-
-
-
-
         let signers = document.signers;
         await signers.forEach(async (signer, index) => {
             if (signer.email === email) {
@@ -341,8 +335,8 @@ exports.sigDocument = async (req, res, next) => {
                     let pdfBytes = await pdfDoc.save();
                     document.buffer = Binary(pdfBytes);
                     console.log(pdfBytes);
-                    document.lastModifiedHash = shasum( pdfBytes );
-                    
+                    document.lastModifiedHash = shasum(pdfBytes);
+
 
 
 
@@ -358,8 +352,8 @@ exports.sigDocument = async (req, res, next) => {
                 }
             }
         });
-       
-        res.status(200).json({message:'ok'});
+
+        res.status(200).json({ message: 'ok' });
     }
     catch (err) {
         res.status(500).json({ err: "Internal Server Error" });
@@ -409,47 +403,47 @@ exports.getStatus = async (req, res, next) => {
     }
 }
 
-exports.verifyDocument = async(req,res,next)=>{
-    try{
+exports.verifyDocument = async (req, res, next) => {
+    try {
 
         let document = req.files.doc;
         let documentPath = document.tempFilePath;
         let documentBufferData = fs.readFileSync(documentPath);
-        let pdfDoc = await PDFDocument.load((documentBufferData),{
-            updateMetadata: false 
+        let pdfDoc = await PDFDocument.load((documentBufferData), {
+            updateMetadata: false
         });
         let keywords = pdfDoc.getKeywords();
         let pdfBytes = await pdfDoc.save();
-        let uploadedDocumentHash  = shasum(pdfBytes);
-        
+        let uploadedDocumentHash = shasum(pdfBytes);
+
         console.log(pdfBytes);
-        if(keywords && keywords.length>0){
+        if (keywords && keywords.length > 0) {
             let id = keywords;
             let doc = await Document.findById(id).exec();
-            if(doc){
+            if (doc) {
 
                 console.log(doc.name);
                 console.log(doc.lastModifiedHash);
                 console.log(uploadedDocumentHash);
-                if(doc.lastModifiedHash===uploadedDocumentHash){
-                    res.status(200).json({verified:true,document:doc});
+                if (doc.lastModifiedHash === uploadedDocumentHash) {
+                    res.status(200).json({ verified: true, document: doc });
                 }
-                else{
-                    res.status(200).json({verified:false});
-    
+                else {
+                    res.status(200).json({ verified: false });
+
                 }
             }
-            else{
-                res.status(200).json({verified:false});
+            else {
+                res.status(200).json({ verified: false });
 
             }
         }
-        else{
-            res.status(200).json({verified:false});
+        else {
+            res.status(200).json({ verified: false });
         }
     }
-    
-    catch(err){
+
+    catch (err) {
         res.status(500).json({ err: "Internal Server Error" });
 
     }
