@@ -35,7 +35,7 @@ export default function VerifyDocument() {
                     
                 }
                 else {
-                    setAlertState({ ...alertState, alert: true, text: 'Document is verified to be Tampered', severity: 'error' });
+                    setAlertState({ ...alertState, alert: true, text: 'Document is Tampered', severity: 'error' });
 
                 }
             }

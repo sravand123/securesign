@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema(
     signature:Buffer,
     imageSignature:Buffer,
     defaultSignature:{type:Number,default:0},
+    publicKeys:[String],
+    encryptedPrivateKey:String,
+    latestPublicKey:String,
     ownedDocuments: [
       {
         type: mongoose.Schema.Types.ObjectId,

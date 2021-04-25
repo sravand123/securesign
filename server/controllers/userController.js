@@ -2,6 +2,8 @@ const Binary = require('mongodb').Binary;
 const User = require('../models/user');
 const fs = require('fs');
 const Jimp = require("jimp")
+const { google } = require('googleapis');
+const client = new google.auth.OAuth2(process.env.googleClientId, process.env.googleClientSecret, "http://localhost:3001/auth/google/callback");
 
 function getEmail(req, res) {
     if (!req.cookies.JWT) {
@@ -82,5 +84,56 @@ exports.setDefaultSignature  =  async(req,res,next)=>{
     }
     catch(err){
         res.status(500).json({ error: "Internal Server Error" });   
+    }
+}
+
+exports.getAccessToken =  (req,res,next)=>{
+    res.status(200).json({accessToken:req.cookies.access_token});
+}
+exports.storeKeys = async(req,res,next)=>{
+   try{
+        let email = getEmail(req,res);
+        let user =  await User.findOne({email:email},{publicKeys:1,encryptedPrivateKey:1,latestPublicKey:1}).exec();
+        let publicKeys = user.publicKeys;
+        publicKeys.push(req.body.publicKey);
+        console.log(publicKeys);
+        user.publicKeys = publicKeys;
+        user.latestPublicKey = req.body.publicKey;
+        user.encryptedPrivateKey = req.body.encryptedPrivateKey;
+        await user.save();
+        res.status(200).json({message:'ok'});
+   }
+   catch(err){
+    res.status(500).json({ error: "Internal Server Error" });   
+
+   }
+
+}
+exports.getKeys = async(req,res,next)=>{
+    try{
+        let email = getEmail(req,res);
+        let user =  await User.findOne({email:email},{latestPublicKey:1,encryptedPrivateKey:1}).exec();
+        res.status(200).json({publicKey:user.latestPublicKey,encryptedPrivateKey:user.encryptedPrivateKey});
+    }
+    catch(err){
+    res.status(500).json({ error: "Internal Server Error" });   
+
+    }
+}
+exports.getKeyStatus = async (req,res,next)=>{
+    try{
+        let email = getEmail(req,res);
+        let user =  await User.findOne({email:email},{latestPublicKey:1,publicKeys:1}).exec();
+        if(user.publicKeys.length===0){
+            res.status(200).json({keyStatus:false})
+        }
+        else{
+            res.status(200).json({keyStatus:true})
+
+        }
+    }
+    catch(err){
+    res.status(500).json({ error: "Internal Server Error" });   
+
     }
 }

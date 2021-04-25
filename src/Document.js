@@ -10,8 +10,9 @@ export default function Document(props) {
     const [name,setName]= useState('');
     let params = useParams();
     const loadPdf = ()=>{
-        axios.get('/api/documents/' + params.fileId, { withCredentials: 'true' }).then(
+        axios.get('/api/documents/' + params.fileId, { withCredentials: true }).then(
             resp => {
+                setDocument(null);
                 setDocument(resp.data.buffer);
                 setComments(resp.data.comments);
                 setName(resp.data.name);

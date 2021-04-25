@@ -3,11 +3,13 @@ const passport = require("passport");
 
 
 
-exports.user_signin=passport.authenticate('google', { scope: ["profile", "email", "https://www.googleapis.com/auth/drive"] })
+exports.user_signin=passport.authenticate('google', { scope: ["profile", "email", "https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/drive.appdata"] })
 
 
 
-exports.google_callback = function(req,res,next){
+exports.google_callback =async function(req,res,next){
+  
+
     var query = { email: req.user.email },
       update = { email: req.user.email, name: req.user.name,image:req.user.image },
       options = { upsert: true, new: true, setDefaultsOnInsert: true };

@@ -18,6 +18,7 @@ import Document from './Document';
 import SignatureBox from './SignatureBox';
 import SignatureTabs from './SignatureTabs';
 import VerifyDocument from './VerifyDocument';
+import Experiment from './Experiment';
 
 const THEME = createMuiTheme({
  
@@ -75,6 +76,11 @@ function App() {
             <NavBar></NavBar>
             <VerifyDocument></VerifyDocument>
             {/* <SignatureBox></SignatureBox> */}
+          </>
+        )}></Route>
+          <Route exact path="/ex" render={protectRoute(
+          <>
+          <Experiment></Experiment>
           </>
         )}></Route>
         <Route exact path="/" render={protectRoute(

@@ -28,6 +28,10 @@ router.post('/users/defaultsignature', userController.setDefaultSignature);
 
 router.get('/users/getsignatures', userController.getSignatures);
 
-router.get('/users', userController.getUserNamesList);
+router.get('/users/accesstoken', userController.getAccessToken);
+router.post('/users/storekeys', userController.storeKeys);
+router.get('/users/getkeys', userController.getKeys);
+router.get('/users/getkeystatus', userController.getKeyStatus);
 
+router.get('/users', userController.getUserNamesList);
 module.exports = router;

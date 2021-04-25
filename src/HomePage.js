@@ -1,11 +1,12 @@
-import { Button, Card, CardContent, Grid, makeStyles, Paper, Typography } from "@material-ui/core";
+import { Box, Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Input, makeStyles, Paper, TextField, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
-import React, { Component, useEffect } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import BackupIcon from '@material-ui/icons/Backup';
 import axios from "axios";
 import CONSTS from "./constants";
 import CustomButton from "./CustomButton";
 import Signature from './sig.png'
+import KeyGenerator from "./KeyGenerator";
 export default function HomePage() {
 
     const useStyles = makeStyles((theme) => ({
@@ -88,51 +89,23 @@ export default function HomePage() {
 
         }
     }))
-
+  
+   
     const classes = useStyles();
     return (
         <React.Fragment>
-
-            {/* <div className={classes.root} >
-                <div className={classes.items} style={{
-                    backgroundColor: '#fbb034',
-                    backgroundImage: 'linear-gradient(315deg, #fbb034 0%, #ffdd00 74%)'
-                }}>
-                    <p className={classes.itemHeading}>Active Documents</p>
-
-                    <p className={classes.itemTxt}>12</p>
-
-                </div>
-                <div className={classes.items} style={{
-                    backgroundColor: '#f5d020',
-                    backgroundImage: 'linear-gradient(315deg, #f5d020 0%, #f53803 74%)'
-                }}>
-                    <p className={classes.itemHeading}>Expiring Soon</p>
-                    <p className={classes.itemTxt}>09</p>
-
-                </div>
-                <div className={classes.items} className={classes.thirdItem} style={{
-
-                    backgroundColor: '#3bb78f',
-                    backgroundImage: 'linear-gradient(to right, #11998e, #38ef7d)'
-                }}>
-                    <p className={classes.itemHeading}>Completed Documents</p>
-                    <p className={classes.itemTxt}>500</p>
-                </div>
-
-
-            </div> */}
+            <KeyGenerator></KeyGenerator>
             <Grid container justify='space-around' style={{ justifyContent: 'center' }}  >
-                <Grid  onClick={()=>{window.location.replace('/sig')}} item xs={10} sm={4} md={2} style={{
-                    backgroundColor: '#6b5b95', margin: '5px', color: 'white', fontFamily: 'poppins',cursor:'pointer'
+                <Grid onClick={() => { window.location.replace('/sig') }} item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#6b5b95', margin: '5px', color: 'white', fontFamily: 'poppins', cursor: 'pointer'
                 }}>
                     <div style={{ height: '15vh' }}>
 
-                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'poppins',fontWeight:'bold' }}>Manage Your</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Manage Your</Typography>
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'Dancing Script ,cursive',fontWeight:'bold' }} >Signature</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'Dancing Script ,cursive', fontWeight: 'bold' }} >Signature</Typography>
                     </div>
 
                 </Grid>
@@ -141,11 +114,11 @@ export default function HomePage() {
                 }}>
                     <div style={{ height: '15vh' }}>
 
-                        <Typography variant='h5' style={{ padding: '15px' ,fontFamily: 'poppins',fontWeight:'bold'}}>Expiring Soon</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Expiring Soon</Typography>
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px' }} >20</Typography>
+                        <Typography variant='h5' style={{ padding: '15px' }} >02</Typography>
                     </div>
                 </Grid>
                 <Grid item xs={10} sm={4} md={2} style={{
@@ -153,11 +126,11 @@ export default function HomePage() {
                 }}>
                     <div style={{ height: '15vh' }}>
 
-                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'poppins',fontWeight:'bold' }}>Completed</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Completed</Typography>
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px', marginBottom: '0px' }} >20</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', marginBottom: '0px' }} >08</Typography>
                     </div>
 
                 </Grid>
@@ -166,11 +139,11 @@ export default function HomePage() {
                 }}>
                     <div style={{ height: '15vh' }}>
 
-                        <Typography variant='h5' style={{ padding: '15px',fontFamily:'poppins',fontWeight:'bold' }}>Drafts</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Drafts</Typography>
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px',fontFamily: 'poppins', marginBottom: '0px' }} >20</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', marginBottom: '0px' }} >03</Typography>
                     </div>
                 </Grid>
             </Grid>
