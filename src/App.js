@@ -53,12 +53,7 @@ function App() {
             <Status></Status>
           </>
         )}></Route>
-         <Route exact path="/info" render={protectRoute(
-          <>
-            <NavBar></NavBar>
-            <DocumentInfo></DocumentInfo>
-          </>
-        )}></Route>
+       
          <Route exact path="/doc/:fileId" render={protectRoute(
           <>
             <Document></Document>
@@ -78,11 +73,7 @@ function App() {
             {/* <SignatureBox></SignatureBox> */}
           </>
         )}></Route>
-          <Route exact path="/ex" render={protectRoute(
-          <>
-          <Experiment></Experiment>
-          </>
-        )}></Route>
+       
         <Route exact path="/" render={protectRoute(
           <>
             <NavBar></NavBar>

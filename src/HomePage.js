@@ -94,7 +94,7 @@ export default function HomePage() {
     const classes = useStyles();
     return (
         <React.Fragment>
-            <KeyGenerator></KeyGenerator>
+          
             <Grid container justify='space-around' style={{ justifyContent: 'center' }}  >
                 <Grid onClick={() => { window.location.replace('/sig') }} item xs={10} sm={4} md={2} style={{
                     backgroundColor: '#6b5b95', margin: '5px', color: 'white', fontFamily: 'poppins', cursor: 'pointer'
