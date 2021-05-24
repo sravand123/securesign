@@ -1,15 +1,30 @@
 const User = require('../models/user');
 const passport = require("passport");
+const {google} = require('googleapis');
 
 
 
-exports.user_signin=passport.authenticate('google', { scope: ["profile", "email", "https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/drive.appdata"] })
-
+ exports.user_signin=passport.authenticate('google', { scope: ["profile", "email"] })
+// exports.user_signin = async(req,res,next) =>{
+//   authorize(res)
+// }
+function authorize(res) {
+  const client_id  = process.env.googleClientId;
+  const client_secret =process.env.googleClientSecret;
+  const oAuth2Client = new google.auth.OAuth2(
+      client_id, client_secret, "http://localhost:3001/auth/google/callback");
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: ["profile", "email", "https://www.googleapis.com/auth/drive.readonly"],
+  });
+  res.redirect(authUrl);
+    
+  
+}
 
 
 exports.google_callback =async function(req,res,next){
   
-
     var query = { email: req.user.email },
       update = { email: req.user.email, name: req.user.name,image:req.user.image },
       options = { upsert: true, new: true, setDefaultsOnInsert: true };

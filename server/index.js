@@ -11,6 +11,7 @@ let api = require('./routes/api');
 let auth = require('./routes/auth');
 let auth_middleware=  require('./config/auth');
 let app = express();
+require('./config/passport');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -20,7 +21,6 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // support encoded bodies
 app.use(passport.initialize()); 
-require('./config/passport');
 
 
 app.use(fileUpload({

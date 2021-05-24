@@ -1,5 +1,5 @@
 import './App.css';
-import React  from 'react';
+import React, { useState }  from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -19,12 +19,18 @@ import SignatureBox from './SignatureBox';
 import SignatureTabs from './SignatureTabs';
 import VerifyDocument from './VerifyDocument';
 import Experiment from './Experiment';
+import Pdf from './EditorPdf'
+import samplePDF from './sample.pdf'
 
 const THEME = createMuiTheme({
  
 });
 
 function App() {
+  const [pdf,setPdf]= useState(samplePDF);
+  const handleFileChange =(pdf)=>{
+    setPdf(pdf);
+  }
 
   const isLoggedIn = () => {
     if (Cookies.get('id') === null || Cookies.get('id') === undefined) return false;
@@ -70,6 +76,13 @@ function App() {
           <>
             <NavBar></NavBar>
             <VerifyDocument></VerifyDocument>
+            {/* <SignatureBox></SignatureBox> */}
+          </>
+        )}></Route>
+          <Route exact path="/editor" render={protectRoute(
+          <>
+            <NavBar></NavBar>
+            <Pdf pdf={pdf}  handleFileChange = {handleFileChange}></Pdf>
             {/* <SignatureBox></SignatureBox> */}
           </>
         )}></Route>

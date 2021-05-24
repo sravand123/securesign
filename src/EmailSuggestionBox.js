@@ -3,6 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import { ListItemAvatar, Avatar, ListItemText } from '@material-ui/core';
 import Axios from 'axios';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import Cookies from 'js-cookie';
 
 const filter = createFilterOptions();
 
@@ -14,7 +15,7 @@ export default function EmailSuggestionBox(props) {
     useEffect(() => {
         Axios.get('../api/users',{withCredentials:true}).then(
             (resp) => {
-                setOptions(resp.data);
+                setOptions(resp.data.filter((x)=> x.email!=Cookies.get('email')));
                 console.log(resp.data);
             }
         )

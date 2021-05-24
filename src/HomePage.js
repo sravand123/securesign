@@ -8,7 +8,17 @@ import CustomButton from "./CustomButton";
 import Signature from './sig.png'
 import KeyGenerator from "./KeyGenerator";
 export default function HomePage() {
-
+    const [state,setState] = useState({});
+    useEffect(()=>{
+        axios.get('/api/users/frontpageanalytics').then(
+            (data)=>{
+               setState(data.data);
+            },  
+            (err)=>{
+                console.log(err);
+            }
+        )
+    },[]);
     const useStyles = makeStyles((theme) => ({
         root: {
             display: 'flex',
@@ -114,11 +124,11 @@ export default function HomePage() {
                 }}>
                     <div style={{ height: '15vh' }}>
 
-                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Expiring Soon</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Action Required</Typography>
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px' }} >02</Typography>
+                        <Typography variant='h5' style={{ padding: '15px' }} >{state.action_required}</Typography>
                     </div>
                 </Grid>
                 <Grid item xs={10} sm={4} md={2} style={{
@@ -126,11 +136,11 @@ export default function HomePage() {
                 }}>
                     <div style={{ height: '15vh' }}>
 
-                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Completed</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Waiting For Others</Typography>
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px', marginBottom: '0px' }} >08</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', marginBottom: '0px' }} >{state.waiting_for_others}</Typography>
                     </div>
 
                 </Grid>
@@ -139,11 +149,11 @@ export default function HomePage() {
                 }}>
                     <div style={{ height: '15vh' }}>
 
-                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Drafts</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Expiring Soon</Typography>
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', marginBottom: '0px' }} >03</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', marginBottom: '0px' }} >{state.expiring_soon}</Typography>
                     </div>
                 </Grid>
             </Grid>

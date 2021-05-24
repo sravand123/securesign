@@ -8,6 +8,7 @@ export default function Document(props) {
     const [document, setDocument] = useState(null);
     const [comments, setComments] = useState([]);
     const [name,setName]= useState('');
+    const [owner,setOwner] = useState('');
     let params = useParams();
     const loadPdf = ()=>{
         axios.get('/api/documents/' + params.fileId, { withCredentials: true }).then(
@@ -16,6 +17,7 @@ export default function Document(props) {
                 setDocument(resp.data.buffer);
                 setComments(resp.data.comments);
                 setName(resp.data.name);
+                setOwner(resp.data.owner);
                 localStorage.setItem('current_id',params.fileId);
 
             },
@@ -30,7 +32,7 @@ export default function Document(props) {
     return (
         <React.Fragment>
             {document != null ?
-                (<Pdf pdf={document} loadPdf = {loadPdf} comments={comments} name={name}></Pdf>) :
+                (<Pdf pdf={document} loadPdf = {loadPdf} owner={owner} comments={comments} name={name}></Pdf>) :
                 (<Loader open={true}></Loader>)
             }
         </React.Fragment>

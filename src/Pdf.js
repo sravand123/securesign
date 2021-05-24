@@ -4,7 +4,7 @@ import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import { grey } from '@material-ui/core/colors';
 import { AppBar, Grid, makeStyles, Toolbar, Typography } from '@material-ui/core';
 import CONSTS from './constants';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import CustomButton from './CustomButton';
 import { Button } from '@material-ui/core';
 import CommentIcon from '@material-ui/icons/Comment';
@@ -16,6 +16,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import  {faDownload, faPenNib}  from '@fortawesome/free-solid-svg-icons'
 import SignatureContext from './SignatureContext';
 import * as  fileDownload from 'js-file-download';
+import Cookies from 'js-cookie';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
@@ -29,6 +31,7 @@ export default function Pdf(props) {
         open: false,
         mode:'none'
     })
+    const [owner,setOwner] = useState(false);
     const [images,setImages] = useState(null);
     const [signatureData,setSignatureData] = useState(null);
     const setState = (data) => {
@@ -45,7 +48,14 @@ export default function Pdf(props) {
       }
     useEffect(() => {
 
-        setState({ pdf: props.pdf });
+        setState({ pdf: props.pdf});
+        if(props.owner===Cookies.get('email'))
+            {
+              setOwner(true);
+            }
+               
+
+
 
         let pdfPages = [];
         const loadingTask = pdfjsLib.getDocument(props.pdf);
@@ -61,6 +71,7 @@ export default function Pdf(props) {
                 })
             }
         });
+
         axios.get('/api/users/getsignatures',{withCredentials:true}).then(
             (data)=>{
                 let signature = null;
@@ -69,7 +80,6 @@ export default function Pdf(props) {
                  signature = toBase64(data.data.signature.data);
                  if(data.data.imageSignature)
                  imageSignature =toBase64(data.data.imageSignature.data);
-                console.log(signature);
                 setSignatureData({
                   signature:signature,
                   imageSignature:imageSignature,
@@ -141,18 +151,26 @@ export default function Pdf(props) {
   
    }
     const classes = useStyles();
+    let history = useHistory();
+
     return (
           <SignatureContext.Provider value={signatureData}>
 
             <AppBar position="static" style={{ backgroundImage: CONSTS.backgroundImage }}>
                 <Toolbar>
+                    <Button color="inherit" onClick={()=>history.goBack()}><ArrowBackIosIcon fontSize="small"></ArrowBackIosIcon> </Button>
                     <Typography variant="body1" className={classes.title}>
                         <PictureAsPdfIcon style={{ position: 'relative', top: '5px' }}></PictureAsPdfIcon> <span>{props.name}</span>
                     </Typography>
                     <div style={{ marginLeft: 'auto' }}>
                         <Button color="inherit" onClick={() => { setState({ open: true }) }}><CommentIcon></CommentIcon></Button>
+                     {owner ? (<></>) : (
+                         <>
                         <Button color="inherit" onClick={() => { setState({ open: false }) }} ><CreateIcon></CreateIcon></Button>
+                     
                         <Button color="inherit" onClick={() => { setState({ mode: 'sign' }) }} ><FontAwesomeIcon icon={faPenNib} size='lg'></FontAwesomeIcon></Button>
+                        </>
+                     )}
                         <Button color="inherit" onClick={() => { download() }} ><FontAwesomeIcon icon={faDownload} size='lg'></FontAwesomeIcon></Button>
 
                     </div>
@@ -170,10 +188,12 @@ export default function Pdf(props) {
                         </PerfectScrollbar>
                     </div>
                 </Grid>
-                {state.open ? (<Grid item xs={3}>
+                {state.open || owner  ? (<Grid item xs={3}>
 
                     <Comments open={state.open} setState={setState}></Comments>
-                </Grid>) : (<Grid item xs={3} justify='center' alignItems='center'>
+                </Grid>) : (
+                
+                    <Grid item xs={3} justify='center' alignItems='center'>
                     <Grid container style={{width:'100%',height:'100%'}} justify='center' alignItems='center'>
 
                             <div >

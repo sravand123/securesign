@@ -5,7 +5,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import EmailSuggestionBox from './EmailSuggestionBox';
 import CustomButton from './CustomButton';
 import CONSTS from './constants';
-import { green } from '@material-ui/core/colors';
+import SendIcon from '@material-ui/icons/Send';
 
 
 export default function SignerBox(props) {
@@ -45,20 +45,9 @@ export default function SignerBox(props) {
                 <Grid item xs={5} sm={1} >
                     <Fab color='secondary'  style={{backgroundImage:CONSTS.backgroundImage}} onClick={handleAdd}><PersonAddIcon></PersonAddIcon></Fab>
                 </Grid>
-                <Grid item xs={5} sm={1}>
-                    <FormControlLabel
-                       control={
-                        <Checkbox
-                        checked={sequential}
-                        onChange={props.setSequential}
-                        color="primary"
-                      /> }
-                      labelPlacement='right'
-                      label='sequential'       
-                    />
-                </Grid>
+              
                 <Grid item xs={10} sm={5} >
-                    <CustomButton text="submit" style={{ padding: '7px' }} onClick={props.handleSubmit}></CustomButton>
+                    <CustomButton text="submit" icon={SendIcon} style={{ padding: '7px' }} onClick={props.handleSubmit}></CustomButton>
                 </Grid>
             </Grid>
 

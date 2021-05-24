@@ -18,6 +18,7 @@ import ExitToApp from '@material-ui/icons/ExitToApp';
 import { SwipeableDrawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@material-ui/core';
 import axios from 'axios';
 import CONSTS from './constants';
+import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -96,6 +97,7 @@ export default function NavBar(props) {
   const handleDrawer = () => {
     setSideOpen(!sideOpen);
   }
+  const history  = useHistory();
   return (
     <div className={classes.root}>
       <AppBar color="primary" className={classes.appBar} position="static">
@@ -103,10 +105,11 @@ export default function NavBar(props) {
           <Typography variant="h6" className={classes.title}>
             SecurESign
           </Typography>
-          <Button className={classes.navItem} color="inherit" href="/">Home</Button>
-          <Button className={classes.navItem} color="inherit" href="/add/new">add Document</Button>
-          <Button className={classes.navItem} color="inherit" href="/status">Status</Button>
-          <Button className={classes.navItem} color="inherit" href="/verify">Verify</Button>
+          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/')}>Home</Button>
+          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/add/new')}>add Document</Button>
+          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/status')}>Status</Button>
+          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/verify')} >Verify</Button>
+          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/editor')}>Edit PDF</Button>
 
           <div className={classes.navItem}>
             <IconButton
@@ -179,6 +182,24 @@ export default function NavBar(props) {
               </ListItemIcon>
               <a className={classes.link} href="/status" >
                 <ListItemText primary="Status" >
+                </ListItemText>
+              </a>
+            </ListItem>
+            <ListItem button >
+              <ListItemIcon>
+                <CalendarTodayIcon></CalendarTodayIcon>
+              </ListItemIcon>
+              <a className={classes.link}  onClick={()=>history.push('/verify')} >
+                <ListItemText primary="Verify" >
+                </ListItemText>
+              </a>
+            </ListItem>
+            <ListItem button >
+              <ListItemIcon>
+                <CalendarTodayIcon></CalendarTodayIcon>
+              </ListItemIcon>
+              <a className={classes.link} href="/editor" >
+                <ListItemText primary="Edit PDF" >
                 </ListItemText>
               </a>
             </ListItem>

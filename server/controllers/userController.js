@@ -3,6 +3,7 @@ const User = require('../models/user');
 const fs = require('fs');
 const Jimp = require("jimp")
 const { google } = require('googleapis');
+const Document = require('../models/document');
 const client = new google.auth.OAuth2(process.env.googleClientId, process.env.googleClientSecret, "http://localhost:3001/auth/google/callback");
 
 function getEmail(req, res) {
@@ -34,6 +35,62 @@ const convertToPng = async(file)=>{
        let imageBuffer  = await image.getBufferAsync(Jimp.MIME_PNG);
        return imageBuffer;
     
+}
+exports.getFrontPageAnalytics = async (req,res,next)=>{
+    let email = getEmail(req);
+    console.log(email);
+    let documents = await User.findOne({email:email},{sharedDocuments:1,ownedDocuments:1}).populate('ownedDocuments', { buffer: 0 }).populate('sharedDocuments', { buffer: 0 }).exec();
+    console.log(documents);
+    let MY_DOCUMENTS = documents.ownedDocuments;
+    let SHARED_DOCUMENTS = documents.sharedDocuments;
+    let WAITING_FOR_OTHERS = 0;
+    let FAILED = 0;
+    let DRAFTS = 0;
+    let COMPLETED = 0;
+    let ACTION_REQUIRED = 0;
+    let EXPIRING_SOON = 0;
+    MY_DOCUMENTS.forEach((document, index1) => {
+        if (document.status === 'sent') {
+
+            let rejected = false;
+            let waiting = false;
+            let expired = false;
+            document.signers.forEach((signer, inex2) => {
+                if (signer.status === 'rejected') rejected = true;
+                if (signer.status === 'waiting') waiting = true;
+                if (Date.now() - new Date(signer.deadline) > 0 && signer.status !== 'signed' && signer.status !== 'rejected') expired = true;
+
+            })
+            if (rejected || expired) FAILED++;
+            else if (waiting) WAITING_FOR_OTHERS++;
+            else COMPLETED++;
+        }
+        else {
+            DRAFTS++;
+        }
+    })
+    SHARED_DOCUMENTS.forEach((document, index1) => {
+        let signer = document.signers.filter((signer) =>
+            signer.email === email
+        )[0];
+        if (signer) {
+
+            if (signer.status === 'signed') COMPLETED++;
+            else if (signer.status === 'rejected') FAILED++;
+            else if (new Date(signer.deadline) - Date.now() < 0) FAILED++;
+            else if (new Date(signer.deadline) - Date.now() < 86_400_000) {
+                EXPIRING_SOON++;
+                ACTION_REQUIRED++;
+            }
+            else {
+                ACTION_REQUIRED++;
+            }
+            if (document.starred) STARRED++;
+        }
+
+    })
+    res.status(200).json({action_required:ACTION_REQUIRED,waiting_for_others:WAITING_FOR_OTHERS,expiring_soon:EXPIRING_SOON})
+
 }
 
 exports.uploadSignature = async(req,res,next)=>{

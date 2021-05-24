@@ -28,10 +28,11 @@ import CustomButton from "./CustomButton";
 import CONSTS from "./constants";
 import SignersTable from './SignersTable';
 import { grey } from "@material-ui/core/colors";
+import { useHistory } from "react-router";
 export default function DocumentInfo(props) {
 
   const [value, setValue] = React.useState(0);
-
+  const history  =useHistory();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -140,7 +141,7 @@ export default function DocumentInfo(props) {
           <CustomButton text="Cancel" onClick={props.handleClose} >
             Cancel
           </CustomButton>
-          <CustomButton text="Open Document" onClick={() => { window.location.replace('/doc/' + props.document._id) }}  >
+          <CustomButton text="Open Document" onClick={() => { history.push('/doc/' + props.document._id) }}  >
             Open Document
           </CustomButton>
         </DialogActions>
