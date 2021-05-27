@@ -21,6 +21,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
+import Loader from './Loader';
 export default function Pdf(props) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
     const [state, _setState] = useState({
@@ -31,9 +32,10 @@ export default function Pdf(props) {
         open: false,
         mode:'none'
     })
+    const [loader,setLoader] = useState(false);
     const [owner,setOwner] = useState(false);
     const [images,setImages] = useState(null);
-    const [signatureData,setSignatureData] = useState(null);
+    const [signatureData,setSignatureData] = useState({});
     const setState = (data) => {
         _setState({ ...state, ...data });
     }
@@ -124,16 +126,20 @@ export default function Pdf(props) {
     }
     
     const handleSign = ()=>{
+        setLoader(true);
         axios.post('/api/documents/'+localStorage.getItem('current_id')+'/sign',{modifications:images,scale:state.scale},{withCredentials:true}).then(
             (data)=>{
+                setLoader(false);
                 props.loadPdf();
+
             }
         )
     }
     const handleReject = ()=>{
+        setLoader(true);
         axios.post('/api/documents/'+localStorage.getItem('current_id')+'/reject',{},{withCredentials:true}).then(
             (data)=>{
-
+                setLoader(false);
             }
         )
     }
@@ -146,16 +152,24 @@ export default function Pdf(props) {
         return ab;
     }
    const download = async()=>{
+       setLoader(true);
        let data  =toArrayBuffer(props.pdf.data);
        fileDownload(data,'signed.pdf');
+       setLoader(false);
   
    }
+   const history= useHistory();
+   const setSigningMode = ()=>{
+       if(signatureData.signature || signatureData.imageSignature)setState({mode:'sign'});
+       else {
+            history.push('/sig');
+       }
+   }
     const classes = useStyles();
-    let history = useHistory();
 
     return (
           <SignatureContext.Provider value={signatureData}>
-
+            <Loader open={loader}></Loader>
             <AppBar position="static" style={{ backgroundImage: CONSTS.backgroundImage }}>
                 <Toolbar>
                     <Button color="inherit" onClick={()=>history.goBack()}><ArrowBackIosIcon fontSize="small"></ArrowBackIosIcon> </Button>
@@ -164,11 +178,11 @@ export default function Pdf(props) {
                     </Typography>
                     <div style={{ marginLeft: 'auto' }}>
                         <Button color="inherit" onClick={() => { setState({ open: true }) }}><CommentIcon></CommentIcon></Button>
-                     {owner ? (<></>) : (
+                     {(owner && !props.isOwnerSigner) || props.signed ? (<></>) : (
                          <>
                         <Button color="inherit" onClick={() => { setState({ open: false }) }} ><CreateIcon></CreateIcon></Button>
                      
-                        <Button color="inherit" onClick={() => { setState({ mode: 'sign' }) }} ><FontAwesomeIcon icon={faPenNib} size='lg'></FontAwesomeIcon></Button>
+                        <Button color="inherit" onClick={() => { setSigningMode() }} ><FontAwesomeIcon icon={faPenNib} size='lg'></FontAwesomeIcon></Button>
                         </>
                      )}
                         <Button color="inherit" onClick={() => { download() }} ><FontAwesomeIcon icon={faDownload} size='lg'></FontAwesomeIcon></Button>
@@ -188,7 +202,7 @@ export default function Pdf(props) {
                         </PerfectScrollbar>
                     </div>
                 </Grid>
-                {state.open || owner  ? (<Grid item xs={3}>
+                {state.open || (owner&& !props.isOwnerSigner) || props.signed ? (<Grid item xs={3}>
 
                     <Comments open={state.open} setState={setState}></Comments>
                 </Grid>) : (

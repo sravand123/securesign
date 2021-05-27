@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 const Agenda = require('agenda');
 const moment = require('moment');
 const Jimp = require("jimp")
-var shasum = require('shasum')
+var sha512 = require('js-sha512');
 
 
 const { body, validationResult, sanitizeBody } = require("express-validator");
@@ -76,7 +76,7 @@ exports.uploadDocument = async (req, res, next) => {
         let pdfBytes = await pdfDoc.save();
         document.buffer = Binary(pdfBytes);
         console.log(pdfBytes);
-        document.lastModifiedHash = shasum(pdfBytes);
+        document.lastModifiedHash = sha512(pdfBytes);
         await document.save();
         let user = await User.findOne({ 'email': email }).exec();
         user.ownedDocuments.push(document._id);
@@ -94,7 +94,8 @@ exports.addSigners = async (req, res, next) => {
     let isOwnerSigner = false;
     let sequential = req.body.sequential;
     try {
-        signers.forEach(async (signer, index) => {
+       for(let i = 0 ; i < signers.length; i++) {
+            signer = signers[i];
             agenda.define("set_document_expired", async (job) => {
                 let document = await Document.findById(job.attrs.data.documentId, { signers: 1, timeline: 1, status: 1 }).exec();
                 let signers = document.signers;
@@ -122,14 +123,15 @@ exports.addSigners = async (req, res, next) => {
                 await newUser.save();
                 user = newUser;
             }
-
-            if (!user.ownedDocuments.includes(documentId)) {
-                user.sharedDocuments.push(documentId);
-                await user.save();
+            
+            if (user.ownedDocuments.includes(documentId)) {
+                isOwnerSigner = true;  
             }
-            else isOwnerSigner = true;
+            
+            user.sharedDocuments.push(documentId);
+            await user.save(); 
 
-        });
+        };
         let document = await Document.findById(documentId, { buffer: 0 }).exec();
         if (sequential) {
             signers.forEach((signer, index) => {
@@ -146,6 +148,7 @@ exports.addSigners = async (req, res, next) => {
         }
         document.signers = signers;
         document.sequential = sequential;
+        console.log(isOwnerSigner);
         document.isOwnerSigner = isOwnerSigner;
         document.status = 'added_signers';
         await document.save();
@@ -238,21 +241,28 @@ exports.getDocment = async (req, res, next) => {
         let document = await Document.findById(documentId).exec();
         let email = getEmail(req, res);
         let signers = document.signers;
-        signers.forEach((signer, index) => {
-            if (signer.email === email) {
-                if (!signer.viewed) {
-                    let timeline = document.timeline;
-                    timeline.push({ action: 'viewed', time: new Date(), email: getEmail(req, res) });
-                    signers[index].viewed = true;
-                    document.timeline = timeline;
+        let isUserSigner  = (signers.filter((signer)=>(signer.email===email)).length !==0)
+        let isUserOwner = (document.owner === email);
+        if(!isUserOwner && !isUserSigner ){
+            res.status(403).json({err:"You are not authorized to access this document"});
+        }
+        else{
+            signers.forEach((signer, index) => {
+                if (signer.email === email) {
+                    if (!signer.viewed) {
+                        let timeline = document.timeline;
+                        timeline.push({ action: 'viewed', time: new Date(), email: getEmail(req, res) });
+                        signers[index].viewed = true;
+                        document.timeline = timeline;
+                    }
                 }
-            }
-        });
-        console.log(signers);
-
-        document.signers = signers;
-        await document.save();
-        res.status(200).json(document);
+            });
+            console.log(signers);
+    
+            document.signers = signers;
+            await document.save();
+            res.status(200).json(document);
+        }
     }
     catch (err) {
         res.status(500).json({ err: "Internal Server Error" });
@@ -306,7 +316,8 @@ exports.sigDocument = async (req, res, next) => {
 
 
         let signers = document.signers;
-        await signers.forEach(async (signer, index) => {
+       for(let i = 0 ; i < signers.length; i++) {
+           let signer  = signers[i];
             if (signer.email === email) {
                 if (signer.status !== 'signed' && signer.status !== 'rejected' && signer.status !== 'expired') {
 
@@ -337,7 +348,7 @@ exports.sigDocument = async (req, res, next) => {
                     let pdfBytes = await pdfDoc.save();
                     document.buffer = Binary(pdfBytes);
                     console.log(pdfBytes);
-                    document.lastModifiedHash = shasum(pdfBytes);
+                    document.lastModifiedHash = sha512(pdfBytes);
 
 
 
@@ -345,15 +356,13 @@ exports.sigDocument = async (req, res, next) => {
 
                     let timeline = document.timeline;
                     timeline.push({ action: 'signed', time: new Date(), email: getEmail(req, res) });
-                    signers[index].status = 'signed';
-                    console.log(signers[index]);
+                    signers[i].status = 'signed';
                     document.timeline = timeline;
-
                     document.signers = signers;
                     await document.save();
                 }
             }
-        });
+        };
 
         res.status(200).json({ message: 'ok' });
     }
@@ -416,7 +425,7 @@ exports.verifyDocument = async (req, res, next) => {
         });
         let keywords = pdfDoc.getKeywords();
         let pdfBytes = await pdfDoc.save();
-        let uploadedDocumentHash = shasum(pdfBytes);
+        let uploadedDocumentHash = sha512(pdfBytes);
 
         console.log(pdfBytes);
         if (keywords && keywords.length > 0) {

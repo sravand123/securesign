@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
         height: "89vh",
         backgroundColor: grey[50],
     },
+    active:{
+        backgroundColor: grey[90],
+    }
 }));
 
 
@@ -33,50 +36,50 @@ export default function SideBar(props) {
     return (
         <div className={classes.root}>
             <List component="nav">
-                <ListItem button id="ALL_DOCUMENTS" onClick={handleClick}>
+                <ListItem selected={props.status==="ALL_DOCUMENTS"} button id="ALL_DOCUMENTS" onClick={handleClick}>
                     <ListItemIcon>
                         <AllInboxIcon />
                     </ListItemIcon>
                     <ListItemText primary="All Documents" />
                 </ListItem>
-                <ListItem button id="MY_DOCUMENTS" onClick={handleClick}>
+                <ListItem selected={props.status==="MY_DOCUMENTS"} button id="MY_DOCUMENTS" onClick={handleClick}>
                     <ListItemIcon>
                         <AccountBoxOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText primary="My Documents" />
                 </ListItem>
-                <ListItem button id="DRAFTS" onClick={handleClick}>
+                <ListItem selected={props.status==="DRAFTS"} button id="DRAFTS" onClick={handleClick}>
                     <ListItemIcon>
                         <DraftsIcon />
                     </ListItemIcon>
                     <ListItemText primary="Drafts" />
                 </ListItem>
-                <ListItem button id="ACTION_REQUIRED" onClick={handleClick}>
+                <ListItem selected={props.status==="ACTION_REQUIRED"} button id="ACTION_REQUIRED" onClick={handleClick}>
                     <ListItemIcon>
                         <InboxIcon />
                     </ListItemIcon>
                     <ListItemText primary="Action Required" />
                 </ListItem>
 
-                <ListItem button id="WAITING_FOR_OTHERS" onClick={handleClick}>
+                <ListItem selected={props.status==="WAITING_FOR_OTHERS"} button id="WAITING_FOR_OTHERS" onClick={handleClick}>
                     <ListItemIcon>
                         <QueryBuilderOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText primary="Waiting for others" />
                 </ListItem>
-                <ListItem button id="EXPIRING_SOON" onClick={handleClick}>
+                <ListItem selected={props.status==="EXPIRING_SOON"} button id="EXPIRING_SOON" onClick={handleClick}>
                     <ListItemIcon>
                         <AccessAlarmIcon />
                     </ListItemIcon>
                     <ListItemText primary="Expiring Soon" />
                 </ListItem>
-                <ListItem button id="COMPLETED" onClick={handleClick}>
+                <ListItem selected={props.status==="COMPLETED"} button id="COMPLETED" onClick={handleClick}>
                     <ListItemIcon>
                         <AssignmentTurnedInIcon />
                     </ListItemIcon>
                     <ListItemText primary="Completed" />
                 </ListItem>
-                <ListItem button id="FAILED" onClick={handleClick}>
+                <ListItem selected={props.status==="FAILED"} button id="FAILED" onClick={handleClick}>
                     <ListItemIcon>
                         <ErrorIcon />
                     </ListItemIcon>

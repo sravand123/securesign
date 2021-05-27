@@ -43,7 +43,8 @@ export default function DocumentInfo(props) {
     tabItem: {
       fontFamily: 'Poppins',
       fontWeight: 'bold', fontFamily: 'poppins',
-      textTransform: 'capitalize'
+      textTransform: 'capitalize',
+      height:'10vh'
     }
   }));
   const classes = useStyles();
@@ -61,7 +62,7 @@ export default function DocumentInfo(props) {
               value={value}
               indicatorColor="secondary"
 
-              style={{ background:CONSTS.backgroundImage,color:'white'}}
+              style={{ background:CONSTS.backgroundImage,color:'white',height:'10vh'}}
               onChange={handleChange}
               centered
             >
@@ -138,12 +139,15 @@ export default function DocumentInfo(props) {
           )
           }
        
-          <CustomButton text="Cancel" onClick={props.handleClose} >
-            Cancel
+          <CustomButton text="Back" onClick={props.handleClose} >
+            Back
           </CustomButton>
-          <CustomButton text="Open Document" onClick={() => { history.push('/doc/' + props.document._id) }}  >
-            Open Document
-          </CustomButton>
+        { !props.verify ?
+          (<CustomButton text="Open Document" onClick={() => { history.push('/doc/' + props.document._id) }}  >
+          Open Document
+        </CustomButton>)  :
+        (<></>)
+      }
         </DialogActions>
       </Dialog>
     </div>

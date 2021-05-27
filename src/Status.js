@@ -39,6 +39,15 @@ export default function Status(props) {
         let MY_DOCUMENTS = documents.ownedDocuments;
         let SHARED_DOCUMENTS = documents.sharedDocuments;
         let ALL_DOCUMENTS = [...MY_DOCUMENTS, ...SHARED_DOCUMENTS];
+        let set  = new Set();
+        let newList = [];
+        ALL_DOCUMENTS.forEach((doc)=>{
+            if(!set.has(doc._id)){
+               newList.push(doc);
+               set.add(doc._id)
+            }
+        })
+        ALL_DOCUMENTS=newList;
         let WAITING_FOR_OTHERS = [];
         let FAILED = [];
         let DRAFTS = [];
@@ -54,7 +63,7 @@ export default function Status(props) {
                 let expired = false;
                 document.signers.forEach((signer, inex2) => {
                     if (signer.status === 'rejected') rejected = true;
-                    if (signer.status === 'waiting') waiting = true;
+                    if (signer.status === 'waiting' && signer.email!==Cookies.get('email')) waiting = true;
                     if (Date.now() - new Date(signer.deadline) > 0 && signer.status !== 'signed' && signer.status !== 'rejected') expired = true;
 
                 })
@@ -120,7 +129,7 @@ export default function Status(props) {
             {state.open ? (<DocumentInfo handleClose={handleClose} document={state.selectedFile} open={state.open}></DocumentInfo>
             ) : (<></>)}
             <Grid item xs={6} sm={4} md={3}  >
-                <SideBar setStatus={setStatus}></SideBar>
+                <SideBar status={state.status} setStatus={setStatus}></SideBar>
             </Grid>
             <Grid item xs={6} sm={8} md={9} style={{
             }} >

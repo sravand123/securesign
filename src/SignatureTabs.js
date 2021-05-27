@@ -8,6 +8,8 @@ import SignatureBox from './SignatureBox';
 import SignatureImage from './SignatureImage';
 import axios from 'axios';
 import MySignatures from './MySignatures';
+import CONSTS from './constants';
+import Loader from './Loader';
 const useStyles = makeStyles({
   root: {
     flexGrow: 1,
@@ -18,6 +20,7 @@ export default function CenteredTabs() {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const [signatures,setSignatures] = useState({});
+  const [loader,setLoader] = useState(false);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -34,6 +37,7 @@ export default function CenteredTabs() {
     loadSignatures();
   },[]);
   const loadSignatures = ()=>{
+    setLoader(true);
     axios.get('/api/users/getsignatures',{withCredentials:true}).then(
       (data)=>{
         console.log(data.data);
@@ -49,26 +53,39 @@ export default function CenteredTabs() {
           imageSignature:imageSignature,
           default:data.data.defaultSignature
         })
+        setLoader(false);
+      },
+      (err)=>{
+        setLoader(false);
       }
     )
   }
   const changeDefaultSignature = (value)=>{
+    setLoader(true);
     axios.post('/api/users/defaultsignature',{defaultSignature:value},{withCredentials:true}).then(
       (data)=>{
-        setSignatures({...signatures,default:value})
+        
+        setSignatures({...signatures,default:value});
+        setLoader(false);
+      },
+      (err)=>{
+        setLoader(false);
       }
     )
   }
 
   return (
     <React.Fragment>
-
+      <Loader open={loader}></Loader>
     <Paper className={classes.root}>
-      <Tabs
+      <Tabs 
+        style={{
+          color:"#3f51b5"
+        }}
         value={value}
         onChange={handleChange}
         indicatorColor="primary"
-        textColor="primary"
+      
         centered
       >
         <Tab label="My Signatures" />

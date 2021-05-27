@@ -11,7 +11,7 @@ export default function AlertSnackBar(props) {
         setOpen(props.alert);
     }, [props.alert])
     return (
-        <Snackbar open={open} autoHideDuration={6000} onClose={props.handleClose}>
+        <Snackbar open={open} autoHideDuration={10000} onClose={props.handleClose}>
             <Alert onClose={props.handleClose} severity={props.severity}>
                 {props.text}
             </Alert>

@@ -57,7 +57,7 @@ exports.getFrontPageAnalytics = async (req,res,next)=>{
             let expired = false;
             document.signers.forEach((signer, inex2) => {
                 if (signer.status === 'rejected') rejected = true;
-                if (signer.status === 'waiting') waiting = true;
+                if (signer.status === 'waiting' && signer.email!== email) waiting = true;
                 if (Date.now() - new Date(signer.deadline) > 0 && signer.status !== 'signed' && signer.status !== 'rejected') expired = true;
 
             })

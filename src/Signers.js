@@ -9,6 +9,7 @@ import CustomButton from './CustomButton';
 import Loader from './Loader';
 import SignerBox from './SignerBox';
 import { useParams } from 'react-router';
+import Cookies from 'js-cookie';
 
 
 const useStyles = makeStyles(() => ({
@@ -42,7 +43,11 @@ export default function Signers(props) {
         return re.test(String(email).toLowerCase());
     }
     const handleAdd = (data) => {
-        console.log(data);
+        // console.log(data.email);
+        // if(Cookies.get('email')===data.email){
+        //     setState({ ...state,alertText:'You cannot add yourself as a signer', alert: true });
+        //     return;            
+        // }
         if (!validateEmail(data.email)) {
             setState({ ...state,alertText:'Please Enter Valid Email', alert: true });
             return;

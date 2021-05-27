@@ -15,7 +15,8 @@ export default function EmailSuggestionBox(props) {
     useEffect(() => {
         Axios.get('../api/users',{withCredentials:true}).then(
             (resp) => {
-                setOptions(resp.data.filter((x)=> x.email!=Cookies.get('email')));
+               // setOptions(resp.data.filter((x)=> x.email!=Cookies.get('email')));
+               setOptions(resp.data);
                 console.log(resp.data);
             }
         )

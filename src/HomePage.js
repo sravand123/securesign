@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Input, makeStyles, Paper, TextField, Typography } from "@material-ui/core";
+import { Box, Button, Card, CardContent, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Input, makeStyles, Paper, TextField, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 import React, { Component, useEffect, useState } from 'react';
 import BackupIcon from '@material-ui/icons/Backup';
@@ -7,6 +7,7 @@ import CONSTS from "./constants";
 import CustomButton from "./CustomButton";
 import Signature from './sig.png'
 import KeyGenerator from "./KeyGenerator";
+import { useHistory } from "react-router";
 export default function HomePage() {
     const [state,setState] = useState({});
     useEffect(()=>{
@@ -100,13 +101,13 @@ export default function HomePage() {
         }
     }))
   
-   
+    const history = useHistory();
     const classes = useStyles();
     return (
         <React.Fragment>
           
             <Grid container justify='space-around' style={{ justifyContent: 'center' }}  >
-                <Grid onClick={() => { window.location.replace('/sig') }} item xs={10} sm={4} md={2} style={{
+                <Grid onClick={() => {history.push('/sig') }} item xs={10} sm={4} md={2} style={{
                     backgroundColor: '#6b5b95', margin: '5px', color: 'white', fontFamily: 'poppins', cursor: 'pointer'
                 }}>
                     <div style={{ height: '15vh' }}>
@@ -119,8 +120,8 @@ export default function HomePage() {
                     </div>
 
                 </Grid>
-                <Grid item xs={10} sm={4} md={2} style={{
-                    backgroundColor: '#feb236', margin: '5px', color: 'white', fontFamily: 'poppins'
+                <Grid onClick={()=>history.push('/status')} item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#feb236', margin: '5px', color: 'white', fontFamily: 'poppins',cursor:'pointer'
                 }}>
                     <div style={{ height: '15vh' }}>
 
@@ -128,11 +129,14 @@ export default function HomePage() {
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px' }} >{state.action_required}</Typography>
+                        <Typography variant='h5' style={{ padding: '15px' }} >
+                        {state.action_required >=0 ? state.action_required : (<CircularProgress size={20} color="inherit" />)}
+
+                        </Typography>
                     </div>
                 </Grid>
-                <Grid item xs={10} sm={4} md={2} style={{
-                    backgroundColor: '#d64161', margin: '5px', color: 'white', fontFamily: 'poppins'
+                <Grid onClick={()=>history.push('/status')} item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#ff7b25 ', margin: '5px', color: 'white', fontFamily: 'poppins',cursor:'pointer'
                 }}>
                     <div style={{ height: '15vh' }}>
 
@@ -140,26 +144,30 @@ export default function HomePage() {
                     </div>
                     <div>
 
-                        <Typography variant='h5' style={{ padding: '15px', marginBottom: '0px' }} >{state.waiting_for_others}</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', marginBottom: '0px' }} >{state.waiting_for_others>=0 ? state.waiting_for_others : (<CircularProgress size={20} color="inherit" />)
+}</Typography>
                     </div>
 
                 </Grid>
-                <Grid item xs={10} sm={4} md={2} style={{
-                    backgroundColor: '#ff7b25', margin: '5px', color: 'white', fontFamily: 'poppins'
+                <Grid onClick={()=>history.push('/status')} item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#FF4500', margin: '5px', color: 'white', fontFamily: 'poppins',cursor:'pointer'
                 }}>
                     <div style={{ height: '15vh' }}>
 
                         <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Expiring Soon</Typography>
                     </div>
-                    <div>
+                    <div >
 
-                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', marginBottom: '0px' }} >{state.expiring_soon}</Typography>
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', marginBottom: '0px' }} >
+
+                        {state.expiring_soon >=0 ? state.expiring_soon : (<CircularProgress size={20} color="inherit" />)}
+                        </Typography>
                     </div>
                 </Grid>
             </Grid>
             <div className={classes.outerBox}  >
                 <div className={classes.innerBox} >
-                    <CustomButton text=" Add Document" onClick={() => { window.location.replace('/add/new') }} icon={BackupIcon}></CustomButton>
+                    <CustomButton text=" Add Document" onClick={() => { history.push('/add/new') }} icon={BackupIcon}></CustomButton>
 
                 </div>
             </div>
