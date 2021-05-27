@@ -34,20 +34,22 @@ export default function Status(props) {
             error => { console.error(error) }
         )
     }, []);
-
-    const seggregate = (documents) => {
-        let MY_DOCUMENTS = documents.ownedDocuments;
-        let SHARED_DOCUMENTS = documents.sharedDocuments;
-        let ALL_DOCUMENTS = [...MY_DOCUMENTS, ...SHARED_DOCUMENTS];
+    const unique = (array) =>{
         let set  = new Set();
         let newList = [];
-        ALL_DOCUMENTS.forEach((doc)=>{
+        array.forEach((doc)=>{
             if(!set.has(doc._id)){
                newList.push(doc);
                set.add(doc._id)
             }
         })
-        ALL_DOCUMENTS=newList;
+        return newList;
+    } 
+    const seggregate = (documents) => {
+        let MY_DOCUMENTS = documents.ownedDocuments;
+        let SHARED_DOCUMENTS = documents.sharedDocuments;
+        let ALL_DOCUMENTS = unique ([...MY_DOCUMENTS, ...SHARED_DOCUMENTS]);
+       
         let WAITING_FOR_OTHERS = [];
         let FAILED = [];
         let DRAFTS = [];
@@ -97,10 +99,10 @@ export default function Status(props) {
 
         })
         setState({
-            ...state, ALL_DOCUMENTS: ALL_DOCUMENTS, WAITING_FOR_OTHERS: WAITING_FOR_OTHERS,
-            FAILED: FAILED, DRAFTS: DRAFTS, STARRED: STARRED, ACTION_REQUIRED: ACTION_REQUIRED,
-            COMPLETED: COMPLETED, MY_DOCUMENTS: MY_DOCUMENTS, SHARED_DOCUMENTS: SHARED_DOCUMENTS,
-            EXPIRING_SOON: EXPIRING_SOON
+            ...state, ALL_DOCUMENTS: unique(ALL_DOCUMENTS), WAITING_FOR_OTHERS: unique(WAITING_FOR_OTHERS),
+            FAILED: unique(FAILED), DRAFTS: unique(DRAFTS), STARRED: unique(STARRED), ACTION_REQUIRED: unique(ACTION_REQUIRED),
+            COMPLETED: unique(COMPLETED), MY_DOCUMENTS: unique(MY_DOCUMENTS), SHARED_DOCUMENTS: unique(SHARED_DOCUMENTS),
+            EXPIRING_SOON: unique(EXPIRING_SOON)
         });
     }
 

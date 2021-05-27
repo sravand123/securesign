@@ -45,6 +45,8 @@ export default function SignatureImage(props) {
         )
     }
     const imageColorChange = (img, red, green, blue, alpha) => {
+        alpha = (alpha===true)?1:0;
+        console.log(alpha);
         Jimp.read(img).then(function (image) {
 
             image.quality(60)                 // set JPEG quality
@@ -77,6 +79,8 @@ export default function SignatureImage(props) {
 
     }
     const changeImageTransparent = (img, transparent) => {
+        transparent = (transparent===true) ? 1 : 0 ;
+        console.log(transparent);
         Jimp.read(img).then(function (image) {
             image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
 
@@ -98,10 +102,10 @@ export default function SignatureImage(props) {
 
     const changeColor = (color) => {
         switch (color) {
-            case ("red"): imageColorChange(image, 255, 0, 0, transparent); break;
-            case ("blue"): imageColorChange(image, 0, 0, 255, transparent); break;
-            case ("green"): imageColorChange(image, 0, 255, 0, transparent); break;
-            case ("black"): imageColorChange(image, 0, 0, 0, transparent); break;
+            case ("red"): imageColorChange(image, 255, 0, 0, !transparent); break;
+            case ("blue"): imageColorChange(image, 0, 0, 255, !transparent); break;
+            case ("green"): imageColorChange(image, 0, 255, 0, !transparent); break;
+            case ("black"): imageColorChange(image, 0, 0, 0, !transparent); break;
             default:
                 setPreview(image);
                 break;
@@ -113,7 +117,7 @@ export default function SignatureImage(props) {
         setSaved(false);
     }
     const changeToTransparent = (transparent) => {
-        changeImageTransparent(preview, transparent);
+        changeImageTransparent(preview, !transparent);
         setTransparent(transparent);
     }
     return (

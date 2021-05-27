@@ -94,20 +94,26 @@ exports.addSigners = async (req, res, next) => {
     let isOwnerSigner = false;
     let sequential = req.body.sequential;
     try {
-       for(let i = 0 ; i < signers.length; i++) {
+        for (let i = 0; i < signers.length; i++) {
             signer = signers[i];
             agenda.define("set_document_expired", async (job) => {
                 let document = await Document.findById(job.attrs.data.documentId, { signers: 1, timeline: 1, status: 1 }).exec();
                 let signers = document.signers;
                 let timeline = document.timeline;
 
-                timeline.push({ action: 'expired', time: new Date(), email: job.attrs.data.email });
                 signers.forEach((signer, index) => {
-                    if (signer.email === job.attrs.data.email) signers[index].status = 'expired';
+                    if (signer.email === job.attrs.data.email && signer.status==='waiting' ) 
+                    {
+                        signers[index].status = 'expired';
+                        timeline.push({ action: 'expired', time: new Date(), email: job.attrs.data.email });
+                        document.timeline = timeline;
+                        document.signers = signers;
+                        
+
+                    }
                 })
-                document.timeline = timeline;
-                document.signers = signers;
                 await document.save();
+                
             });
             (async function () {
 
@@ -123,13 +129,13 @@ exports.addSigners = async (req, res, next) => {
                 await newUser.save();
                 user = newUser;
             }
-            
+
             if (user.ownedDocuments.includes(documentId)) {
-                isOwnerSigner = true;  
+                isOwnerSigner = true;
             }
-            
+
             user.sharedDocuments.push(documentId);
-            await user.save(); 
+            await user.save();
 
         };
         let document = await Document.findById(documentId, { buffer: 0 }).exec();
@@ -241,12 +247,12 @@ exports.getDocment = async (req, res, next) => {
         let document = await Document.findById(documentId).exec();
         let email = getEmail(req, res);
         let signers = document.signers;
-        let isUserSigner  = (signers.filter((signer)=>(signer.email===email)).length !==0)
+        let isUserSigner = (signers.filter((signer) => (signer.email === email)).length !== 0)
         let isUserOwner = (document.owner === email);
-        if(!isUserOwner && !isUserSigner ){
-            res.status(403).json({err:"You are not authorized to access this document"});
+        if (!isUserOwner && !isUserSigner) {
+            res.status(403).json({ err: "You are not authorized to access this document" });
         }
-        else{
+        else {
             signers.forEach((signer, index) => {
                 if (signer.email === email) {
                     if (!signer.viewed) {
@@ -258,7 +264,7 @@ exports.getDocment = async (req, res, next) => {
                 }
             });
             console.log(signers);
-    
+
             document.signers = signers;
             await document.save();
             res.status(200).json(document);
@@ -316,8 +322,8 @@ exports.sigDocument = async (req, res, next) => {
 
 
         let signers = document.signers;
-       for(let i = 0 ; i < signers.length; i++) {
-           let signer  = signers[i];
+        for (let i = 0; i < signers.length; i++) {
+            let signer = signers[i];
             if (signer.email === email) {
                 if (signer.status !== 'signed' && signer.status !== 'rejected' && signer.status !== 'expired') {
 

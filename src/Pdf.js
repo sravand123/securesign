@@ -140,6 +140,7 @@ export default function Pdf(props) {
         axios.post('/api/documents/'+localStorage.getItem('current_id')+'/reject',{},{withCredentials:true}).then(
             (data)=>{
                 setLoader(false);
+                props.loadPdf();
             }
         )
     }
