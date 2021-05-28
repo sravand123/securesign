@@ -27,7 +27,7 @@ router.post('/users/uploadsignature', userController.uploadSignature);
 router.post('/users/defaultsignature', userController.setDefaultSignature);
 router.get('/users/frontpageanalytics',userController.getFrontPageAnalytics);
 router.get('/users/getsignatures', userController.getSignatures);
-
+router.get('/users/analytics' , userController.analytics)
 router.get('/users/accesstoken', userController.getAccessToken);
 router.post('/users/storekeys', userController.storeKeys);
 router.get('/users/getkeys', userController.getKeys);

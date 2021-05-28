@@ -110,6 +110,7 @@ export default function NavBar(props) {
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/status')}>Status</Button>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/verify')} >Verify</Button>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/editor')}>Edit PDF</Button>
+          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/report')}>Analytics</Button>
 
           <div className={classes.navItem}>
             <IconButton
@@ -200,6 +201,15 @@ export default function NavBar(props) {
               </ListItemIcon>
               <a className={classes.link} href="/editor" >
                 <ListItemText primary="Edit PDF" >
+                </ListItemText>
+              </a>
+            </ListItem>
+            <ListItem button >
+              <ListItemIcon>
+                <CalendarTodayIcon></CalendarTodayIcon>
+              </ListItemIcon>
+              <a className={classes.link} href="/report" >
+                <ListItemText primary="Analytics" >
                 </ListItemText>
               </a>
             </ListItem>

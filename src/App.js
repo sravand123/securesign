@@ -21,9 +21,10 @@ import VerifyDocument from './VerifyDocument';
 import Experiment from './Experiment';
 import Pdf from './EditorPdf'
 import samplePDF from './sample.pdf'
+import Report from './Report';
 
 const THEME = createMuiTheme({
- 
+
 });
 
 function App() {
@@ -52,14 +53,14 @@ function App() {
             <WorkFlowStepper></WorkFlowStepper>
           </>
         )}></Route>
-       
+
         <Route exact path="/status" render={protectRoute(
           <>
             <NavBar></NavBar>
             <Status></Status>
           </>
         )}></Route>
-       
+
          <Route exact path="/doc/:fileId" render={protectRoute(
           <>
             <Document></Document>
@@ -86,14 +87,20 @@ function App() {
             {/* <SignatureBox></SignatureBox> */}
           </>
         )}></Route>
-       
+        <Route exact path="/report" render={protectRoute(
+          <>
+            <NavBar></NavBar>
+            <Report></Report>
+          </>
+        )}>
+        </Route>
         <Route exact path="/" render={protectRoute(
           <>
             <NavBar></NavBar>
             <HomePage></HomePage>
           </>
         )}>
-       
+
         </Route>
       </Switch>
     </Router>
