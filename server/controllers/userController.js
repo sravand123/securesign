@@ -122,17 +122,21 @@ exports.analytics = async (req,res,next)=>{
             let waiting = false;
             let expired = false;
             document.signers.forEach((signer, inex2) => {
-                if (signer.status === 'rejected' && signer.email!==email) {
+                if (signer.status === 'rejected' ) {
                   rejected = true;rejected = true;
 
                 }
                 if (signer.status === 'waiting' && signer.email!== email) waiting = true;
-                if (Date.now() - new Date(signer.deadline) > 0 && signer.status !== 'signed' && signer.status !== 'rejected' && signer.email!==email) expired = true;
+                if (Date.now() - new Date(signer.deadline) > 0 && signer.status !== 'signed' && signer.status !== 'rejected' ) expired = true;
 
             })
             if (rejected || expired) FAILED++;
             else if (waiting) WAITING_FOR_OTHERS++;
-            else COMPLETED++;
+            let notCompleted =0;
+           document.signers.forEach((signer,index)=>{
+                if(signer.status!=='signed')notCompleted=1;
+           })
+           if(notCompleted==0)COMPLETED++;
         }
         else {
             DRAFTS++;
