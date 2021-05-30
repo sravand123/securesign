@@ -107,7 +107,7 @@ export default function NavBar(props) {
           </Typography>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/')}>Home</Button>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/add/new')}>add Document</Button>
-          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/status')}>Status</Button>
+          <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/status')}>Documents</Button>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/verify')} >Verify</Button>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/editor')}>Edit PDF</Button>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/report')}>Analytics</Button>
@@ -182,7 +182,7 @@ export default function NavBar(props) {
                 <CalendarTodayIcon></CalendarTodayIcon>
               </ListItemIcon>
               <a className={classes.link} href="/status" >
-                <ListItemText primary="Status" >
+                <ListItemText primary="Documents" >
                 </ListItemText>
               </a>
             </ListItem>

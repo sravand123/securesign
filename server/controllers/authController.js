@@ -4,7 +4,7 @@ const {google} = require('googleapis');
 
 
 
- exports.user_signin=passport.authenticate('google', { scope: ["profile", "email"] })
+ exports.user_signin=passport.authenticate('google', { scope: ["profile", "email","https://www.googleapis.com/auth/drive.file"] })
 // exports.user_signin = async(req,res,next) =>{
 //   authorize(res)
 // }

@@ -76,7 +76,7 @@ export default function VerifyDocument() {
                             <Grid item>
                                 <h5 style={{ fontFamily: 'poppins' }}>{"Upload A Document to Verify"} </h5>
                                 <input type="file" accept="pdf" onChange={onFileChange} ref={inputRef} style={{ display: 'none' }}></input>
-                                <CustomButton text="Click Here" onClick={() => { inputRef.current.click(); }}></CustomButton>
+                                <CustomButton text="Click Here To Upload" onClick={() => { inputRef.current.click(); }}></CustomButton>
                               
                             </Grid>
                           ):(

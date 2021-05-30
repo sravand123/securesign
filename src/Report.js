@@ -95,35 +95,38 @@ export default function Report() {
   return (
     <React.Fragment>
       <Loader open={loader}></Loader>
-      <Grid container justify='center' alignItems="center" style={{width:'80vw',margin:'auto',marginTop:'30px',boxShadow:CONSTS.boxShadow}}>
-        <Grid item sm={5} xs={10}  >
-          <div style={{textAlign:'center'}}>
-
-          <h5 style={{fontFamily:'poppins'}}>Documents shared with you</h5>
-          </div>
-          
-          {state.series ?
-            (
-              <ReactApexChart  options={state.options} series={state.series} type="donut" width={350}></ReactApexChart>
-            ) :
-            (<></>)
-
-          }
-          
-         
+      {pie2.series ? (
+          <Grid container justify='center' alignItems="center" style={{width:'80vw',margin:'auto',marginTop:'30px',boxShadow:CONSTS.boxShadow}}>
+          <Grid item sm={5} xs={10}  >
+            <div style={{textAlign:'center'}}>
+  
+            <h5 style={{fontFamily:'poppins'}}>Documents shared with you</h5>
+            </div>
+            
+            {state.series ?
+              (
+                <ReactApexChart  options={state.options} series={state.series} type="donut" width={350}></ReactApexChart>
+              ) :
+              (<></>)
+  
+            }
+            
+           
+          </Grid>
+          <Grid item sm={5} xs={10}>
+            <div style={{textAlign:'center'}}>
+  
+          <h5 style={{fontFamily:'poppins'}}>Documents created by you</h5>
+            </div>
+            
+            {pie2.series ? (
+              <ReactApexChart options={pie2.options} series={pie2.series} type="donut" width={350}></ReactApexChart>
+            ) : (<></>)}
+          </Grid>
         </Grid>
-        <Grid item sm={5} xs={10}>
-          <div style={{textAlign:'center'}}>
-
-        <h5 style={{fontFamily:'poppins'}}>Documents created by you</h5>
-          </div>
-          
-          {pie2.series ? (
-            <ReactApexChart options={pie2.options} series={pie2.series} type="donut" width={350}></ReactApexChart>
-          ) : (<></>)}
-        </Grid>
-      </Grid>
-
+      ):
+      (<></>)}
+  
      
 
     </React.Fragment>
